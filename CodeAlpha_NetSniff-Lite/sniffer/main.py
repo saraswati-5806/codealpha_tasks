@@ -1,25 +1,20 @@
 from scapy.all import sniff
 from packet_handler import parse_packet
+from rules_engine import detect_threat
+from logger import log_packet
 from colorama import Fore, Style, init
 
 init(autoreset=True)
 
 
 def display_packet(packet_data):
-    """
-    Print parsed packet details in terminal.
-    """
-
-    protocol_color = {
-        "TCP": Fore.CYAN,
-        "UDP": Fore.GREEN,
-        "ICMP": Fore.YELLOW,
-        "ARP": Fore.MAGENTA,
-        "OTHER": Fore.WHITE,
-        "ERROR": Fore.RED
+    risk_color = {
+        "NORMAL": Fore.GREEN,
+        "SUSPICIOUS": Fore.YELLOW,
+        "ALERT": Fore.RED
     }
 
-    color = protocol_color.get(packet_data["protocol"], Fore.WHITE)
+    color = risk_color.get(packet_data["risk_flag"], Fore.WHITE)
 
     print(
         color
@@ -27,30 +22,32 @@ def display_packet(packet_data):
         + f"{packet_data['protocol']} | "
         + f"{packet_data['src_ip']}:{packet_data['src_port']} "
         + f"→ {packet_data['dst_ip']}:{packet_data['dst_port']} "
-        + f"| TTL: {packet_data['ttl']}"
+        + f"| TTL: {packet_data['ttl']} "
+        + f"| Risk: {packet_data['risk_flag']}"
         + Style.RESET_ALL
     )
 
+    if packet_data["risk_flag"] != "NORMAL":
+        print(Fore.RED + f"Reason: {packet_data['alert_reason']}")
+
     if packet_data["payload"]:
-        print(Fore.LIGHTBLACK_EX + f"Payload: {packet_data['payload']}" + Style.RESET_ALL)
+        print(Fore.LIGHTBLACK_EX + f"Payload: {packet_data['payload']}")
 
 
 def handle_packet(packet):
-    """
-    Called automatically whenever Scapy captures a packet.
-    """
-
     packet_data = parse_packet(packet)
+
+    risk_flag, alert_reason = detect_threat(packet_data)
+    packet_data["risk_flag"] = risk_flag
+    packet_data["alert_reason"] = alert_reason
+
+    log_packet(packet_data)
     display_packet(packet_data)
 
 
 def start_sniffer():
-    """
-    Start live network sniffing.
-    """
-
     print(Fore.CYAN + "\n======================================")
-    print(Fore.CYAN + " NetSniff-Lite | Basic Network Sniffer")
+    print(Fore.CYAN + " NetSniff-Lite | Smart Packet Analyzer")
     print(Fore.CYAN + "======================================")
     print(Fore.YELLOW + "Capturing packets... Press CTRL + C to stop.\n")
 
