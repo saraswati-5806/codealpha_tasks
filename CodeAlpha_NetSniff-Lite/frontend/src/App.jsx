@@ -1,122 +1,317 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useEffect, useMemo, useState } from "react";
+import {
+  AlertTriangle,
+  Activity,
+  ShieldCheck,
+  Wifi,
+  FileText,
+  RefreshCw,
+} from "lucide-react";
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+} from "chart.js";
+import { Doughnut, Line } from "react-chartjs-2";
+import "./index.css";
 
-function App() {
-  const [count, setCount] = useState(0)
+ChartJS.register(
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement
+);
 
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+const SAMPLE_PACKETS = [
+  {
+    timestamp: "2026-06-05 01:10:01",
+    src_ip: "192.168.1.37",
+    dst_ip: "142.250.71.99",
+    protocol: "UDP",
+    src_port: "57825",
+    dst_port: "443",
+    ttl: "128",
+    payload: "Encrypted HTTPS/QUIC traffic",
+    risk_flag: "NORMAL",
+    alert_reason: "No suspicious activity detected",
+  },
+  {
+    timestamp: "2026-06-05 01:10:02",
+    src_ip: "172.64.148.235",
+    dst_ip: "192.168.1.37",
+    protocol: "TCP",
+    src_port: "443",
+    dst_port: "57047",
+    ttl: "59",
+    payload: "TLS encrypted web response",
+    risk_flag: "NORMAL",
+    alert_reason: "No suspicious activity detected",
+  },
+  {
+    timestamp: "2026-06-05 01:10:04",
+    src_ip: "10.0.0.23",
+    dst_ip: "192.168.1.37",
+    protocol: "TCP",
+    src_port: "49152",
+    dst_port: "22",
+    ttl: "64",
+    payload: "shell access attempt",
+    risk_flag: "ALERT",
+    alert_reason: "Suspicious keyword detected in payload: shell",
+  },
+];
 
-      <div className="ticks"></div>
+function parseCSV(csvText) {
+  const lines = csvText.trim().split(/\r?\n/);
+  if (lines.length < 2) return [];
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+  const headers = lines[0].split(",");
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+  return lines.slice(1).map((line) => {
+    const values = line.split(",");
+    const row = {};
+
+    headers.forEach((header, index) => {
+      row[header.trim()] = values[index]?.trim() || "";
+    });
+
+    return row;
+  });
 }
 
-export default App
+function App() {
+  const [packets, setPackets] = useState(SAMPLE_PACKETS);
+  const [status, setStatus] = useState("Demo data loaded");
+
+  const loadPackets = async () => {
+    try {
+      const response = await fetch("/sample_packets.csv");
+
+      if (!response.ok) {
+        setStatus("Using demo data. CSV file not found in frontend/public.");
+        return;
+      }
+
+      const csvText = await response.text();
+      const parsed = parseCSV(csvText);
+
+      if (parsed.length > 0) {
+        setPackets(parsed);
+        setStatus("Packet data loaded from CSV");
+      }
+    } catch {
+      setStatus("Using demo data. Backend CSV is not connected yet.");
+    }
+  };
+
+  useEffect(() => {
+    loadPackets();
+    const interval = setInterval(loadPackets, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const totalPackets = packets.length;
+  const alertPackets = packets.filter((p) => p.risk_flag === "ALERT").length;
+  const suspiciousPackets = packets.filter(
+    (p) => p.risk_flag === "SUSPICIOUS"
+  ).length;
+
+  const protocolCounts = useMemo(() => {
+    return packets.reduce((acc, packet) => {
+      acc[packet.protocol] = (acc[packet.protocol] || 0) + 1;
+      return acc;
+    }, {});
+  }, [packets]);
+
+  const chartData = {
+    labels: Object.keys(protocolCounts),
+    datasets: [
+      {
+        data: Object.values(protocolCounts),
+        backgroundColor: ["#22d3ee", "#38bdf8", "#a78bfa", "#facc15", "#fb7185"],
+        borderColor: "#020617",
+        borderWidth: 2,
+      },
+    ],
+  };
+
+  const lineData = {
+    labels: packets.map((_, index) => `P${index + 1}`),
+    datasets: [
+      {
+        label: "Packets Captured",
+        data: packets.map((_, index) => index + 1),
+        borderColor: "#22d3ee",
+        backgroundColor: "rgba(34, 211, 238, 0.2)",
+        tension: 0.4,
+      },
+    ],
+  };
+
+  const riskBadge = (risk) => {
+    if (risk === "ALERT") return "bg-red-500/20 text-red-300 border-red-500/40";
+    if (risk === "SUSPICIOUS")
+      return "bg-yellow-500/20 text-yellow-300 border-yellow-500/40";
+    return "bg-emerald-500/20 text-emerald-300 border-emerald-500/40";
+  };
+
+  return (
+    <main className="min-h-screen bg-slate-950 text-white">
+      <section className="border-b border-cyan-400/20 bg-slate-900/80 px-6 py-5">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-300">
+              CodeAlpha Cyber Security Task 1
+            </p>
+            <h1 className="mt-2 text-3xl font-bold text-white md:text-5xl">
+              NetSniff-Lite Dashboard
+            </h1>
+            <p className="mt-2 max-w-2xl text-slate-300">
+              Real-time packet monitoring dashboard for captured network traffic,
+              protocol analysis, and rule-based threat alerts.
+            </p>
+          </div>
+
+          <button
+            onClick={loadPackets}
+            className="flex w-fit items-center gap-2 rounded-xl border border-cyan-400/40 bg-cyan-400/10 px-4 py-3 text-cyan-200 transition hover:bg-cyan-400/20"
+          >
+            <RefreshCw size={18} />
+            Refresh Data
+          </button>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-6 py-8">
+        <div className="mb-6 rounded-xl border border-cyan-400/20 bg-slate-900 p-4 text-sm text-cyan-200">
+          Status: {status}
+        </div>
+
+        <div className="grid gap-5 md:grid-cols-4">
+          <div className="rounded-2xl border border-cyan-400/20 bg-slate-900 p-5">
+            <Wifi className="mb-4 text-cyan-300" />
+            <p className="text-sm text-slate-400">Total Packets</p>
+            <h2 className="text-3xl font-bold">{totalPackets}</h2>
+          </div>
+
+          <div className="rounded-2xl border border-emerald-400/20 bg-slate-900 p-5">
+            <ShieldCheck className="mb-4 text-emerald-300" />
+            <p className="text-sm text-slate-400">Normal Packets</p>
+            <h2 className="text-3xl font-bold">
+              {totalPackets - alertPackets - suspiciousPackets}
+            </h2>
+          </div>
+
+          <div className="rounded-2xl border border-yellow-400/20 bg-slate-900 p-5">
+            <Activity className="mb-4 text-yellow-300" />
+            <p className="text-sm text-slate-400">Suspicious</p>
+            <h2 className="text-3xl font-bold">{suspiciousPackets}</h2>
+          </div>
+
+          <div className="rounded-2xl border border-red-400/20 bg-slate-900 p-5">
+            <AlertTriangle className="mb-4 text-red-300" />
+            <p className="text-sm text-slate-400">Alerts</p>
+            <h2 className="text-3xl font-bold">{alertPackets}</h2>
+          </div>
+        </div>
+
+        <div className="mt-8 grid gap-6 lg:grid-cols-2">
+          <div className="rounded-2xl border border-cyan-400/20 bg-slate-900 p-6">
+            <h3 className="mb-4 text-xl font-semibold">Protocol Distribution</h3>
+            <Doughnut data={chartData} />
+          </div>
+
+          <div className="rounded-2xl border border-cyan-400/20 bg-slate-900 p-6">
+            <h3 className="mb-4 text-xl font-semibold">Traffic Timeline</h3>
+            <Line data={lineData} />
+          </div>
+        </div>
+
+        <div className="mt-8 rounded-2xl border border-red-400/20 bg-slate-900 p-6">
+          <h3 className="mb-4 flex items-center gap-2 text-xl font-semibold">
+            <AlertTriangle className="text-red-300" />
+            Alert Panel
+          </h3>
+
+          <div className="grid gap-3">
+            {packets
+              .filter((p) => p.risk_flag !== "NORMAL")
+              .map((packet, index) => (
+                <div
+                  key={index}
+                  className="rounded-xl border border-red-400/20 bg-red-500/10 p-4"
+                >
+                  <p className="font-semibold text-red-200">
+                    {packet.risk_flag}: {packet.alert_reason}
+                  </p>
+                  <p className="mt-1 text-sm text-slate-300">
+                    {packet.src_ip} → {packet.dst_ip} | {packet.protocol}
+                  </p>
+                </div>
+              ))}
+
+            {packets.filter((p) => p.risk_flag !== "NORMAL").length === 0 && (
+              <p className="text-slate-400">No alerts detected yet.</p>
+            )}
+          </div>
+        </div>
+
+        <div className="mt-8 rounded-2xl border border-cyan-400/20 bg-slate-900 p-6">
+          <h3 className="mb-4 flex items-center gap-2 text-xl font-semibold">
+            <FileText className="text-cyan-300" />
+            Live Packet Feed
+          </h3>
+
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[900px] border-collapse text-left text-sm">
+              <thead>
+                <tr className="border-b border-slate-700 text-slate-300">
+                  <th className="p-3">Time</th>
+                  <th className="p-3">Source</th>
+                  <th className="p-3">Destination</th>
+                  <th className="p-3">Protocol</th>
+                  <th className="p-3">TTL</th>
+                  <th className="p-3">Risk</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {packets.map((packet, index) => (
+                  <tr
+                    key={index}
+                    className="border-b border-slate-800 hover:bg-slate-800/60"
+                  >
+                    <td className="p-3 text-slate-300">{packet.timestamp}</td>
+                    <td className="p-3">{packet.src_ip}:{packet.src_port}</td>
+                    <td className="p-3">{packet.dst_ip}:{packet.dst_port}</td>
+                    <td className="p-3 text-cyan-300">{packet.protocol}</td>
+                    <td className="p-3">{packet.ttl}</td>
+                    <td className="p-3">
+                      <span
+                        className={`rounded-full border px-3 py-1 text-xs font-semibold ${riskBadge(
+                          packet.risk_flag
+                        )}`}
+                      >
+                        {packet.risk_flag}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+export default App;
