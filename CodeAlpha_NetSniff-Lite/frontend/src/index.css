@@ -4,9 +4,82 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   background: #020617;
   color: white;
   font-family: Inter, system-ui, sans-serif;
+}
+
+button,
+select,
+input {
+  font-family: inherit;
+}
+
+.btn-cyan {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgb(34 211 238 / 0.4);
+  background: rgb(34 211 238 / 0.1);
+  padding: 0.75rem 1rem;
+  color: rgb(165 243 252);
+  transition: 0.2s ease;
+}
+
+.btn-cyan:hover {
+  background: rgb(34 211 238 / 0.2);
+}
+
+.btn-green {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgb(52 211 153 / 0.4);
+  background: rgb(52 211 153 / 0.1);
+  padding: 0.75rem 1rem;
+  color: rgb(167 243 208);
+  transition: 0.2s ease;
+}
+
+.btn-green:hover {
+  background: rgb(52 211 153 / 0.2);
+}
+
+.btn-purple {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgb(168 85 247 / 0.4);
+  background: rgb(168 85 247 / 0.1);
+  padding: 0.75rem 1rem;
+  color: rgb(221 214 254);
+  transition: 0.2s ease;
+}
+
+.btn-purple:hover {
+  background: rgb(168 85 247 / 0.2);
+}
+
+.input {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid rgb(51 65 85);
+  background: rgb(2 6 23);
+  padding: 0.75rem 1rem;
+  color: white;
+  outline: none;
+  transition: 0.2s ease;
+}
+
+.input:focus {
+  border-color: rgb(34 211 238);
 }
