@@ -6,6 +6,10 @@ import {
   Wifi,
   FileText,
   RefreshCw,
+  Search,
+  Download,
+  Filter,
+  XCircle,
 } from "lucide-react";
 import {
   Chart as ChartJS,
@@ -90,13 +94,21 @@ function parseCSV(csvText) {
 function App() {
   const [packets, setPackets] = useState(SAMPLE_PACKETS);
   const [status, setStatus] = useState("Demo data loaded");
+  const [lastUpdated, setLastUpdated] = useState(new Date().toLocaleTimeString());
+  const [searchTerm, setSearchTerm] = useState("");
+  const [protocolFilter, setProtocolFilter] = useState("ALL");
+  const [riskFilter, setRiskFilter] = useState("ALL");
 
   const loadPackets = async () => {
+    setStatus("Refreshing packet data...");
+
     try {
-      const response = await fetch("/sample_packets.csv");
+      const response = await fetch(`/sample_packets.csv?time=${Date.now()}`);
 
       if (!response.ok) {
-        setStatus("Using demo data. CSV file not found in frontend/public.");
+        setPackets(SAMPLE_PACKETS);
+        setStatus("CSV not found. Showing built-in demo data.");
+        setLastUpdated(new Date().toLocaleTimeString());
         return;
       }
 
@@ -105,31 +117,58 @@ function App() {
 
       if (parsed.length > 0) {
         setPackets(parsed);
-        setStatus("Packet data loaded from CSV");
+        setStatus(`Loaded ${parsed.length} packets from CSV.`);
+      } else {
+        setPackets(SAMPLE_PACKETS);
+        setStatus("CSV is empty. Showing demo packet data.");
       }
+
+      setLastUpdated(new Date().toLocaleTimeString());
     } catch {
-      setStatus("Using demo data. Backend CSV is not connected yet.");
+      setPackets(SAMPLE_PACKETS);
+      setStatus("Could not load CSV. Showing demo packet data.");
+      setLastUpdated(new Date().toLocaleTimeString());
     }
   };
 
   useEffect(() => {
     loadPackets();
-    const interval = setInterval(loadPackets, 3000);
+    const interval = setInterval(loadPackets, 5000);
     return () => clearInterval(interval);
   }, []);
 
-  const totalPackets = packets.length;
-  const alertPackets = packets.filter((p) => p.risk_flag === "ALERT").length;
-  const suspiciousPackets = packets.filter(
+  const filteredPackets = useMemo(() => {
+    return packets.filter((packet) => {
+      const keyword = searchTerm.toLowerCase();
+
+      const matchesSearch =
+        packet.src_ip?.toLowerCase().includes(keyword) ||
+        packet.dst_ip?.toLowerCase().includes(keyword) ||
+        packet.protocol?.toLowerCase().includes(keyword) ||
+        packet.risk_flag?.toLowerCase().includes(keyword) ||
+        packet.alert_reason?.toLowerCase().includes(keyword);
+
+      const matchesProtocol =
+        protocolFilter === "ALL" || packet.protocol === protocolFilter;
+
+      const matchesRisk = riskFilter === "ALL" || packet.risk_flag === riskFilter;
+
+      return matchesSearch && matchesProtocol && matchesRisk;
+    });
+  }, [packets, searchTerm, protocolFilter, riskFilter]);
+
+  const totalPackets = filteredPackets.length;
+  const alertPackets = filteredPackets.filter((p) => p.risk_flag === "ALERT").length;
+  const suspiciousPackets = filteredPackets.filter(
     (p) => p.risk_flag === "SUSPICIOUS"
   ).length;
 
   const protocolCounts = useMemo(() => {
-    return packets.reduce((acc, packet) => {
+    return filteredPackets.reduce((acc, packet) => {
       acc[packet.protocol] = (acc[packet.protocol] || 0) + 1;
       return acc;
     }, {});
-  }, [packets]);
+  }, [filteredPackets]);
 
   const chartData = {
     labels: Object.keys(protocolCounts),
@@ -144,11 +183,11 @@ function App() {
   };
 
   const lineData = {
-    labels: packets.map((_, index) => `P${index + 1}`),
+    labels: filteredPackets.map((_, index) => `P${index + 1}`),
     datasets: [
       {
         label: "Packets Captured",
-        data: packets.map((_, index) => index + 1),
+        data: filteredPackets.map((_, index) => index + 1),
         borderColor: "#22d3ee",
         backgroundColor: "rgba(34, 211, 238, 0.2)",
         tension: 0.4,
@@ -163,42 +202,136 @@ function App() {
     return "bg-emerald-500/20 text-emerald-300 border-emerald-500/40";
   };
 
+  const clearFilters = () => {
+    setSearchTerm("");
+    setProtocolFilter("ALL");
+    setRiskFilter("ALL");
+  };
+
+  const downloadCSV = () => {
+    const headers = [
+      "timestamp",
+      "src_ip",
+      "dst_ip",
+      "protocol",
+      "src_port",
+      "dst_port",
+      "ttl",
+      "payload",
+      "risk_flag",
+      "alert_reason",
+    ];
+
+    const rows = filteredPackets.map((packet) =>
+      headers.map((header) => `"${packet[header] || ""}"`).join(",")
+    );
+
+    const csvContent = [headers.join(","), ...rows].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "netsniff_filtered_packets.csv";
+    link.click();
+
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <main className="min-h-screen bg-slate-950 text-white">
       <section className="border-b border-cyan-400/20 bg-slate-900/80 px-6 py-5">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-300">
-              CodeAlpha Cyber Security Task 1
-            </p>
+            
             <h1 className="mt-2 text-3xl font-bold text-white md:text-5xl">
               NetSniff-Lite Dashboard
             </h1>
             <p className="mt-2 max-w-2xl text-slate-300">
-              Real-time packet monitoring dashboard for captured network traffic,
-              protocol analysis, and rule-based threat alerts.
+              Real-time packet monitoring dashboard with protocol analysis,
+              search filters, CSV export, and rule-based threat alerts.
             </p>
           </div>
 
-          <button
-            onClick={loadPackets}
-            className="flex w-fit items-center gap-2 rounded-xl border border-cyan-400/40 bg-cyan-400/10 px-4 py-3 text-cyan-200 transition hover:bg-cyan-400/20"
-          >
-            <RefreshCw size={18} />
-            Refresh Data
-          </button>
+          <div className="flex flex-wrap gap-3">
+            <button
+              onClick={loadPackets}
+              className="flex items-center gap-2 rounded-xl border border-cyan-400/40 bg-cyan-400/10 px-4 py-3 text-cyan-200 transition hover:bg-cyan-400/20"
+            >
+              <RefreshCw size={18} />
+              Refresh Data
+            </button>
+
+            <button
+              onClick={downloadCSV}
+              className="flex items-center gap-2 rounded-xl border border-emerald-400/40 bg-emerald-400/10 px-4 py-3 text-emerald-200 transition hover:bg-emerald-400/20"
+            >
+              <Download size={18} />
+              Download CSV
+            </button>
+          </div>
         </div>
       </section>
 
       <section className="mx-auto max-w-7xl px-6 py-8">
         <div className="mb-6 rounded-xl border border-cyan-400/20 bg-slate-900 p-4 text-sm text-cyan-200">
-          Status: {status}
+          Status: {status} | Last updated: {lastUpdated}
+        </div>
+
+        <div className="mb-6 grid gap-4 rounded-2xl border border-cyan-400/20 bg-slate-900 p-5 lg:grid-cols-4">
+          <div className="relative lg:col-span-2">
+            <Search className="absolute left-3 top-3 text-slate-400" size={18} />
+            <input
+              type="text"
+              placeholder="Search by IP, protocol, risk, or alert reason..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full rounded-xl border border-slate-700 bg-slate-950 py-3 pl-10 pr-4 text-sm text-white outline-none transition focus:border-cyan-400"
+            />
+          </div>
+
+          <div className="relative">
+            <Filter className="absolute left-3 top-3 text-slate-400" size={18} />
+            <select
+              value={protocolFilter}
+              onChange={(e) => setProtocolFilter(e.target.value)}
+              className="w-full rounded-xl border border-slate-700 bg-slate-950 py-3 pl-10 pr-4 text-sm text-white outline-none transition focus:border-cyan-400"
+            >
+              <option value="ALL">All Protocols</option>
+              <option value="TCP">TCP</option>
+              <option value="UDP">UDP</option>
+              <option value="ICMP">ICMP</option>
+              <option value="ARP">ARP</option>
+              <option value="OTHER">OTHER</option>
+            </select>
+          </div>
+
+          <div className="flex gap-3">
+            <select
+              value={riskFilter}
+              onChange={(e) => setRiskFilter(e.target.value)}
+              className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none transition focus:border-cyan-400"
+            >
+              <option value="ALL">All Risk Levels</option>
+              <option value="NORMAL">NORMAL</option>
+              <option value="SUSPICIOUS">SUSPICIOUS</option>
+              <option value="ALERT">ALERT</option>
+            </select>
+
+            <button
+              onClick={clearFilters}
+              className="rounded-xl border border-red-400/40 bg-red-400/10 px-4 text-red-200 transition hover:bg-red-400/20"
+              title="Clear filters"
+            >
+              <XCircle size={20} />
+            </button>
+          </div>
         </div>
 
         <div className="grid gap-5 md:grid-cols-4">
           <div className="rounded-2xl border border-cyan-400/20 bg-slate-900 p-5">
             <Wifi className="mb-4 text-cyan-300" />
-            <p className="text-sm text-slate-400">Total Packets</p>
+            <p className="text-sm text-slate-400">Visible Packets</p>
             <h2 className="text-3xl font-bold">{totalPackets}</h2>
           </div>
 
@@ -242,7 +375,7 @@ function App() {
           </h3>
 
           <div className="grid gap-3">
-            {packets
+            {filteredPackets
               .filter((p) => p.risk_flag !== "NORMAL")
               .map((packet, index) => (
                 <div
@@ -258,9 +391,8 @@ function App() {
                 </div>
               ))}
 
-            {packets.filter((p) => p.risk_flag !== "NORMAL").length === 0 && (
-              <p className="text-slate-400">No alerts detected yet.</p>
-            )}
+            {filteredPackets.filter((p) => p.risk_flag !== "NORMAL").length ===
+              0 && <p className="text-slate-400">No alerts detected yet.</p>}
           </div>
         </div>
 
@@ -284,14 +416,18 @@ function App() {
               </thead>
 
               <tbody>
-                {packets.map((packet, index) => (
+                {filteredPackets.map((packet, index) => (
                   <tr
                     key={index}
                     className="border-b border-slate-800 hover:bg-slate-800/60"
                   >
                     <td className="p-3 text-slate-300">{packet.timestamp}</td>
-                    <td className="p-3">{packet.src_ip}:{packet.src_port}</td>
-                    <td className="p-3">{packet.dst_ip}:{packet.dst_port}</td>
+                    <td className="p-3">
+                      {packet.src_ip}:{packet.src_port}
+                    </td>
+                    <td className="p-3">
+                      {packet.dst_ip}:{packet.dst_port}
+                    </td>
                     <td className="p-3 text-cyan-300">{packet.protocol}</td>
                     <td className="p-3">{packet.ttl}</td>
                     <td className="p-3">
@@ -305,6 +441,14 @@ function App() {
                     </td>
                   </tr>
                 ))}
+
+                {filteredPackets.length === 0 && (
+                  <tr>
+                    <td colSpan="6" className="p-6 text-center text-slate-400">
+                      No packets match your current filters.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
