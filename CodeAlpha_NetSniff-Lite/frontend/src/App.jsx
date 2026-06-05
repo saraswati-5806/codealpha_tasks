@@ -109,7 +109,7 @@ function App() {
 
   useEffect(() => {
     loadPackets();
-    const interval = setInterval(loadPackets, 5000);
+    const interval = setInterval(loadPackets, 3000);
     return () => clearInterval(interval);
   }, []);
 
