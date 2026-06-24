@@ -84,7 +84,9 @@ function App() {
     try {
       const response = await fetch(`${API_URL}?time=${Date.now()}`);
 
-      if (!response.ok) throw new Error("API response failed");
+      if (!response.ok) {
+        throw new Error("API response failed");
+      }
 
       const apiData = await response.json();
       const livePackets = apiData.packets || [];
@@ -110,6 +112,7 @@ function App() {
   useEffect(() => {
     loadPackets();
     const interval = setInterval(loadPackets, 3000);
+
     return () => clearInterval(interval);
   }, []);
 
@@ -127,31 +130,55 @@ function App() {
       const matchesProtocol =
         protocolFilter === "ALL" || packet.protocol === protocolFilter;
 
-      const matchesRisk = riskFilter === "ALL" || packet.risk_flag === riskFilter;
+      const matchesRisk =
+        riskFilter === "ALL" || packet.risk_flag === riskFilter;
 
       return matchesSearch && matchesProtocol && matchesRisk;
     });
   }, [packets, searchTerm, protocolFilter, riskFilter]);
 
   const totalPackets = filteredPackets.length;
-  const alertPackets = filteredPackets.filter((p) => p.risk_flag === "ALERT").length;
-  const suspiciousPackets = filteredPackets.filter((p) => p.risk_flag === "SUSPICIOUS").length;
+  const alertPackets = filteredPackets.filter(
+    (packet) => packet.risk_flag === "ALERT"
+  ).length;
+  const suspiciousPackets = filteredPackets.filter(
+    (packet) => packet.risk_flag === "SUSPICIOUS"
+  ).length;
   const normalPackets = totalPackets - alertPackets - suspiciousPackets;
 
-  const protocolCounts = useMemo(() => countBy(filteredPackets, "protocol"), [filteredPackets]);
-  const sourceCounts = useMemo(() => countBy(filteredPackets, "src_ip"), [filteredPackets]);
-  const portCounts = useMemo(() => countBy(filteredPackets, "dst_port"), [filteredPackets]);
+  const protocolCounts = useMemo(
+    () => countBy(filteredPackets, "protocol"),
+    [filteredPackets]
+  );
+  const sourceCounts = useMemo(
+    () => countBy(filteredPackets, "src_ip"),
+    [filteredPackets]
+  );
+  const portCounts = useMemo(
+    () => countBy(filteredPackets, "dst_port"),
+    [filteredPackets]
+  );
 
   const topSourceIP = getTopItem(sourceCounts);
   const topPort = getTopItem(portCounts);
   const topProtocol = getTopItem(protocolCounts);
 
   const chartData = {
-    labels: Object.keys(protocolCounts).length ? Object.keys(protocolCounts) : ["No Data"],
+    labels: Object.keys(protocolCounts).length
+      ? Object.keys(protocolCounts)
+      : ["No Data"],
     datasets: [
       {
-        data: Object.values(protocolCounts).length ? Object.values(protocolCounts) : [1],
-        backgroundColor: ["#22d3ee", "#38bdf8", "#a78bfa", "#facc15", "#fb7185"],
+        data: Object.values(protocolCounts).length
+          ? Object.values(protocolCounts)
+          : [1],
+        backgroundColor: [
+          "#22d3ee",
+          "#38bdf8",
+          "#a78bfa",
+          "#facc15",
+          "#fb7185",
+        ],
         borderColor: "#020617",
         borderWidth: 2,
       },
@@ -165,12 +192,26 @@ function App() {
     datasets: [
       {
         label: "Packets Captured",
-        data: filteredPackets.length ? filteredPackets.map((_, index) => index + 1) : [0],
+        data: filteredPackets.length
+          ? filteredPackets.map((_, index) => index + 1)
+          : [0],
         borderColor: "#22d3ee",
         backgroundColor: "rgba(34, 211, 238, 0.2)",
         tension: 0.4,
       },
     ],
+  };
+
+  const riskBadge = (risk) => {
+    if (risk === "ALERT") {
+      return "bg-red-500/20 text-red-300 border-red-500/40";
+    }
+
+    if (risk === "SUSPICIOUS") {
+      return "bg-yellow-500/20 text-yellow-300 border-yellow-500/40";
+    }
+
+    return "bg-emerald-500/20 text-emerald-300 border-emerald-500/40";
   };
 
   const clearFilters = () => {
@@ -222,12 +263,14 @@ Most Used Protocol: ${topProtocol.label} (${topProtocol.count})
 Detected Alerts
 ---------------
 ${
-  filteredPackets.filter((p) => p.risk_flag !== "NORMAL").length
+  filteredPackets.filter((packet) => packet.risk_flag !== "NORMAL").length
     ? filteredPackets
-        .filter((p) => p.risk_flag !== "NORMAL")
+        .filter((packet) => packet.risk_flag !== "NORMAL")
         .map(
-          (p, i) =>
-            `${i + 1}. [${p.risk_flag}] ${p.src_ip} -> ${p.dst_ip} | ${p.protocol} | ${p.alert_reason}`
+          (packet, index) =>
+            `${index + 1}. [${packet.risk_flag}] ${packet.src_ip} -> ${
+              packet.dst_ip
+            } | ${packet.protocol} | ${packet.alert_reason}`
         )
         .join("\n")
     : "No suspicious or alert packets detected."
@@ -335,21 +378,27 @@ This tool is for educational cybersecurity learning and should only be used on y
         <div className="mt-6 rounded-3xl border border-cyan-400/20 bg-slate-900/70 p-5 backdrop-blur-xl">
           <div className="grid gap-4 lg:grid-cols-4">
             <div className="relative lg:col-span-2">
-              <Search className="absolute left-3 top-3 text-slate-400" size={18} />
+              <Search
+                className="absolute left-3 top-3 text-slate-400"
+                size={18}
+              />
               <input
                 type="text"
                 placeholder="Search IP, protocol, risk, alert reason..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(event) => setSearchTerm(event.target.value)}
                 className="input pl-10"
               />
             </div>
 
             <div className="relative">
-              <Filter className="absolute left-3 top-3 text-slate-400" size={18} />
+              <Filter
+                className="absolute left-3 top-3 text-slate-400"
+                size={18}
+              />
               <select
                 value={protocolFilter}
-                onChange={(e) => setProtocolFilter(e.target.value)}
+                onChange={(event) => setProtocolFilter(event.target.value)}
                 className="input pl-10"
               >
                 <option value="ALL">All Protocols</option>
@@ -364,7 +413,7 @@ This tool is for educational cybersecurity learning and should only be used on y
             <div className="flex gap-3">
               <select
                 value={riskFilter}
-                onChange={(e) => setRiskFilter(e.target.value)}
+                onChange={(event) => setRiskFilter(event.target.value)}
                 className="input"
               >
                 <option value="ALL">All Risk Levels</option>
@@ -373,7 +422,11 @@ This tool is for educational cybersecurity learning and should only be used on y
                 <option value="ALERT">ALERT</option>
               </select>
 
-              <button onClick={clearFilters} className="rounded-xl border border-red-400/40 bg-red-400/10 px-4 text-red-200 hover:bg-red-400/20">
+              <button
+                onClick={clearFilters}
+                className="rounded-xl border border-red-400/40 bg-red-400/10 px-4 text-red-200 hover:bg-red-400/20"
+                title="Clear filters"
+              >
                 <XCircle size={20} />
               </button>
             </div>
@@ -381,25 +434,67 @@ This tool is for educational cybersecurity learning and should only be used on y
         </div>
 
         <div className="mt-6 grid gap-5 md:grid-cols-4">
-          <Card icon={<Wifi />} title="Visible Packets" value={totalPackets} color="text-cyan-300" />
-          <Card icon={<ShieldCheck />} title="Normal Packets" value={normalPackets} color="text-emerald-300" />
-          <Card icon={<Activity />} title="Suspicious" value={suspiciousPackets} color="text-yellow-300" />
-          <Card icon={<AlertTriangle />} title="Alerts" value={alertPackets} color="text-red-300" />
+          <Card
+            icon={<Wifi />}
+            title="Visible Packets"
+            value={totalPackets}
+            color="text-cyan-300"
+          />
+          <Card
+            icon={<ShieldCheck />}
+            title="Normal Packets"
+            value={normalPackets}
+            color="text-emerald-300"
+          />
+          <Card
+            icon={<Activity />}
+            title="Suspicious"
+            value={suspiciousPackets}
+            color="text-yellow-300"
+          />
+          <Card
+            icon={<AlertTriangle />}
+            title="Alerts"
+            value={alertPackets}
+            color="text-red-300"
+          />
         </div>
 
         <div className="mt-6 grid gap-5 md:grid-cols-4">
-          <MiniCard title="Top Source IP" value={topSourceIP.label} sub={`${topSourceIP.count} packets`} />
-          <MiniCard title="Top Destination Port" value={topPort.label} sub={`${topPort.count} hits`} />
-          <MiniCard title="Most Used Protocol" value={topProtocol.label} sub={`${topProtocol.count} packets`} />
-          <MiniCard title="Risk Ratio" value={`${alertPackets + suspiciousPackets}/${totalPackets}`} sub="flagged packets" />
+          <MiniCard
+            title="Top Source IP"
+            value={topSourceIP.label}
+            sub={`${topSourceIP.count} packets`}
+          />
+          <MiniCard
+            title="Top Destination Port"
+            value={topPort.label}
+            sub={`${topPort.count} hits`}
+          />
+          <MiniCard
+            title="Most Used Protocol"
+            value={topProtocol.label}
+            sub={`${topProtocol.count} packets`}
+          />
+          <MiniCard
+            title="Risk Ratio"
+            value={`${alertPackets + suspiciousPackets}/${totalPackets}`}
+            sub="flagged packets"
+          />
         </div>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-2">
-          <Panel title="Protocol Distribution" icon={<BarChart3 className="text-cyan-300" />}>
+          <Panel
+            title="Protocol Distribution"
+            icon={<BarChart3 className="text-cyan-300" />}
+          >
             <Doughnut data={chartData} />
           </Panel>
 
-          <Panel title="Traffic Timeline" icon={<Radio className="text-cyan-300" />}>
+          <Panel
+            title="Traffic Timeline"
+            icon={<Radio className="text-cyan-300" />}
+          >
             <Line data={lineData} />
           </Panel>
         </div>
@@ -422,8 +517,8 @@ This tool is for educational cybersecurity learning and should only be used on y
         </div>
 
         <footer className="mt-10 border-t border-slate-800 pt-6 text-center text-sm text-slate-500">
-          NetSniff-Lite • CodeAlpha Cyber Security Internship • Built with Python,
-          Scapy, Flask, React, Tailwind CSS v4 and Chart.js
+          NetSniff-Lite • CodeAlpha Cyber Security Internship • Built with
+          Python, Scapy, Flask, React, Tailwind CSS v4 and Chart.js
         </footer>
       </section>
     </main>
@@ -431,18 +526,22 @@ This tool is for educational cybersecurity learning and should only be used on y
 }
 
 function countBy(items, key) {
-  return items.reduce((acc, item) => {
+  return items.reduce((accumulator, item) => {
     const value = item[key] || "N/A";
-    acc[value] = (acc[value] || 0) + 1;
-    return acc;
+    accumulator[value] = (accumulator[value] || 0) + 1;
+    return accumulator;
   }, {});
 }
 
 function getTopItem(counts) {
   const entries = Object.entries(counts);
-  if (!entries.length) return { label: "N/A", count: 0 };
+
+  if (!entries.length) {
+    return { label: "N/A", count: 0 };
+  }
 
   const [label, count] = entries.sort((a, b) => b[1] - a[1])[0];
+
   return { label, count };
 }
 
@@ -523,7 +622,7 @@ function Panel({ title, icon, children }) {
 }
 
 function AlertPanel({ packets }) {
-  const riskyPackets = packets.filter((p) => p.risk_flag !== "NORMAL");
+  const riskyPackets = packets.filter((packet) => packet.risk_flag !== "NORMAL");
 
   return (
     <div className="mt-8 rounded-3xl border border-red-400/20 bg-slate-900/70 p-6 backdrop-blur-xl">
@@ -539,7 +638,10 @@ function AlertPanel({ packets }) {
           </p>
         ) : (
           riskyPackets.map((packet, index) => (
-            <div key={index} className="rounded-2xl border border-red-400/20 bg-red-500/10 p-4">
+            <div
+              key={`${packet.timestamp}-${index}`}
+              className="rounded-2xl border border-red-400/20 bg-red-500/10 p-4"
+            >
               <p className="font-semibold text-red-200">
                 {packet.risk_flag}: {packet.alert_reason}
               </p>
@@ -579,19 +681,31 @@ function PacketTable({ packets, riskBadge }) {
             {packets.length === 0 ? (
               <tr>
                 <td colSpan="6" className="p-8 text-center text-slate-400">
-                  Waiting for packets... Start the sniffer and click Refresh Data.
+                  Waiting for packets... Start the sniffer and click Refresh
+                  Data.
                 </td>
               </tr>
             ) : (
               packets.map((packet, index) => (
-                <tr key={index} className="border-b border-slate-800 hover:bg-slate-800/60">
+                <tr
+                  key={`${packet.timestamp}-${index}`}
+                  className="border-b border-slate-800 hover:bg-slate-800/60"
+                >
                   <td className="p-3 text-slate-300">{packet.timestamp}</td>
-                  <td className="p-3">{packet.src_ip}:{packet.src_port}</td>
-                  <td className="p-3">{packet.dst_ip}:{packet.dst_port}</td>
+                  <td className="p-3">
+                    {packet.src_ip}:{packet.src_port}
+                  </td>
+                  <td className="p-3">
+                    {packet.dst_ip}:{packet.dst_port}
+                  </td>
                   <td className="p-3 text-cyan-300">{packet.protocol}</td>
                   <td className="p-3">{packet.ttl}</td>
                   <td className="p-3">
-                    <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${riskBadge(packet.risk_flag)}`}>
+                    <span
+                      className={`rounded-full border px-3 py-1 text-xs font-semibold ${riskBadge(
+                        packet.risk_flag
+                      )}`}
+                    >
                       {packet.risk_flag}
                     </span>
                   </td>
