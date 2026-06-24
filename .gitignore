@@ -1,0 +1,33 @@
+# Python
+.venv/
+**/.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment files
+.env
+**/.env
+
+# Node
+node_modules/
+**/node_modules/
+
+dist/
+**/dist/
+
+# Logs
+*.log
+
+# Packet captures
+captured_packets.csv
+captured_packets_*.csv
+**/captured_packets.csv
+**/captured_packets_*.csv
+
+# VS Code
+.vscode/settings.json
+
+# OS files
+Thumbs.db
+.DS_Store
