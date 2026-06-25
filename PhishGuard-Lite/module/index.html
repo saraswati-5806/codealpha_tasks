@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PhishGuard-Lite | Phishing Awareness Training</title>
+
+  <link rel="stylesheet" href="style.css" />
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+</head>
+
+<body>
+  <header class="navbar">
+    <div class="brand">
+      <div class="brand-icon">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+      <div>
+        <h1>PhishGuard-Lite</h1>
+        <p>Interactive Phishing Awareness Module</p>
+      </div>
+    </div>
+
+    <a href="pages/07_quiz.html" class="nav-btn">
+      Start Quiz
+      <i class="fa-solid fa-arrow-right"></i>
+    </a>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="hero-content">
+        <p class="eyebrow">CodeAlpha Cyber Security Task 2</p>
+
+        <h2>Think Before You Click.</h2>
+
+        <p class="hero-text">
+          Learn how to recognize phishing emails, fake websites, and social
+          engineering tricks through interactive lessons, real-world examples,
+          and a practical quiz.
+        </p>
+
+        <div class="hero-actions">
+          <a href="pages/01_what_is_phishing.html" class="primary-btn">
+            Start Learning
+            <i class="fa-solid fa-play"></i>
+          </a>
+
+          <a href="#lessons" class="secondary-btn">
+            View Lessons
+            <i class="fa-solid fa-layer-group"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="security-card">
+        <div class="risk-badge">Awareness Score</div>
+        <h3 id="awarenessScore">0%</h3>
+        <p>Complete lessons to improve your phishing defence readiness.</p>
+
+        <div class="progress-wrapper">
+          <div class="progress-header">
+            <span>Learning Progress</span>
+            <span id="progressText">0/7</span>
+          </div>
+          <div class="progress-bar">
+            <div id="progressFill"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="dashboard">
+      <div class="stat-card">
+        <i class="fa-solid fa-book-open"></i>
+        <p>Lessons</p>
+        <h3>6</h3>
+      </div>
+
+      <div class="stat-card">
+        <i class="fa-solid fa-circle-question"></i>
+        <p>Quiz Questions</p>
+        <h3>10</h3>
+      </div>
+
+      <div class="stat-card">
+        <i class="fa-solid fa-award"></i>
+        <p>Pass Score</p>
+        <h3>70%</h3>
+      </div>
+
+      <div class="stat-card">
+        <i class="fa-solid fa-user-shield"></i>
+        <p>Training Mode</p>
+        <h3>Safe</h3>
+      </div>
+    </section>
+
+    <section id="lessons" class="section-heading">
+      <p class="eyebrow">Training Roadmap</p>
+      <h2>Complete the phishing awareness path</h2>
+    </section>
+
+    <section class="lesson-grid">
+      <a class="lesson-card" href="pages/01_what_is_phishing.html">
+        <span>01</span>
+        <i class="fa-solid fa-fish"></i>
+        <h3>What is Phishing?</h3>
+        <p>Understand phishing, its goals, and common attack types.</p>
+      </a>
+
+      <a class="lesson-card" href="pages/02_email_red_flags.html">
+        <span>02</span>
+        <i class="fa-solid fa-envelope-circle-check"></i>
+        <h3>Email Red Flags</h3>
+        <p>Spot suspicious senders, links, attachments, and urgent language.</p>
+      </a>
+
+      <a class="lesson-card" href="pages/03_fake_websites.html">
+        <span>03</span>
+        <i class="fa-solid fa-globe"></i>
+        <h3>Fake Websites</h3>
+        <p>Learn how cloned websites and typo domains trick users.</p>
+      </a>
+
+      <a class="lesson-card" href="pages/04_social_engineering.html">
+        <span>04</span>
+        <i class="fa-solid fa-user-secret"></i>
+        <h3>Social Engineering</h3>
+        <p>Understand urgency, fear, authority, curiosity, and manipulation.</p>
+      </a>
+
+      <a class="lesson-card" href="pages/05_best_practices.html">
+        <span>05</span>
+        <i class="fa-solid fa-list-check"></i>
+        <h3>Best Practices</h3>
+        <p>Use MFA, verify links, avoid risky attachments, and report phishing.</p>
+      </a>
+
+      <a class="lesson-card" href="pages/06_real_world_examples.html">
+        <span>06</span>
+        <i class="fa-solid fa-timeline"></i>
+        <h3>Real-World Examples</h3>
+        <p>Study real phishing incidents and how they could be prevented.</p>
+      </a>
+
+      <a class="lesson-card quiz-card" href="pages/07_quiz.html">
+        <span>07</span>
+        <i class="fa-solid fa-brain"></i>
+        <h3>Interactive Quiz</h3>
+        <p>Test your phishing awareness with instant feedback and scoring.</p>
+      </a>
+    </section>
+
+    <section class="feature-section">
+      <div class="feature-card">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <h3>Fake Email Inspector</h3>
+        <p>Analyze suspicious email sections and learn why they are risky.</p>
+      </div>
+
+      <div class="feature-card">
+        <i class="fa-solid fa-window-restore"></i>
+        <h3>Fake Website Detector</h3>
+        <p>Compare real vs fake login patterns, domains, and URL mistakes.</p>
+      </div>
+
+      <div class="feature-card">
+        <i class="fa-solid fa-certificate"></i>
+        <h3>Completion Certificate</h3>
+        <p>Score 70% or more in the quiz to unlock a certificate-style result.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <h3>PhishGuard-Lite</h3>
+    <p>Built to help users recognize, avoid, and report phishing attacks.</p>
+    <p class="credit">Designed & Developed by Saraswati Panigrahi</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

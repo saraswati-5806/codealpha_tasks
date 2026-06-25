@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Social Engineering | PhishGuard-Lite</title>
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header class="navbar">
+    <a href="../index.html" class="brand">
+      <div class="brand-icon"><i class="fa-solid fa-shield-halved"></i></div>
+      <div>
+        <h1>PhishGuard-Lite</h1>
+        <p>Lesson 4 of 6</p>
+      </div>
+    </a>
+    <a href="05_best_practices.html" class="nav-btn">Next Lesson <i class="fa-solid fa-arrow-right"></i></a>
+  </header>
+
+  <main class="container">
+    <section class="hero-content">
+      <p class="eyebrow">Lesson 04</p>
+      <h2>Social Engineering Tactics</h2>
+      <p class="hero-text">
+        Social engineering means manipulating people psychologically instead of directly hacking systems.
+      </p>
+    </section>
+
+    <section class="lesson-grid">
+      <div class="lesson-card"><span>01</span><i class="fa-solid fa-bolt"></i><h3>Urgency</h3><p>“Act now or lose access” forces rushed decisions.</p></div>
+      <div class="lesson-card"><span>02</span><i class="fa-solid fa-user-tie"></i><h3>Authority</h3><p>Attackers pretend to be CEOs, managers, banks, or IT support.</p></div>
+      <div class="lesson-card"><span>03</span><i class="fa-solid fa-skull-crossbones"></i><h3>Fear</h3><p>Fake virus alerts or account warnings scare victims into action.</p></div>
+      <div class="lesson-card"><span>04</span><i class="fa-solid fa-gift"></i><h3>Curiosity</h3><p>“You have a parcel” or “See attached photo” tricks users into clicking.</p></div>
+      <div class="lesson-card"><span>05</span><i class="fa-solid fa-handshake"></i><h3>Reciprocity</h3><p>Attackers offer a gift or favor first, then request sensitive information.</p></div>
+      <div class="lesson-card quiz-card"><span>Case</span><i class="fa-solid fa-envelope-open-text"></i><h3>John Podesta Hack</h3><p>A phishing email led to compromised email access during the 2016 election period.</p></div>
+    </section>
+
+    <div class="hero-actions">
+      <a href="03_fake_websites.html" class="secondary-btn"><i class="fa-solid fa-arrow-left"></i> Previous</a>
+      <button class="primary-btn" onclick="markLessonComplete('lesson4')">Mark Lesson Complete <i class="fa-solid fa-check"></i></button>
+      <a href="05_best_practices.html" class="secondary-btn">Continue <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+  </main>
+
+  <script src="../script.js"></script>
+</body>
+</html>

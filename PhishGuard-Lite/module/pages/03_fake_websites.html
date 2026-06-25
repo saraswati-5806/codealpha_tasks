@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fake Websites | PhishGuard-Lite</title>
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header class="navbar">
+    <a href="../index.html" class="brand">
+      <div class="brand-icon"><i class="fa-solid fa-shield-halved"></i></div>
+      <div>
+        <h1>PhishGuard-Lite</h1>
+        <p>Lesson 3 of 6</p>
+      </div>
+    </a>
+    <a href="04_social_engineering.html" class="nav-btn">Next Lesson <i class="fa-solid fa-arrow-right"></i></a>
+  </header>
+
+  <main class="container">
+    <section class="hero-content">
+      <p class="eyebrow">Lesson 03</p>
+      <h2>Fake Websites</h2>
+      <p class="hero-text">
+        Attackers clone real websites to steal login details. A fake page may look real, but the URL usually reveals the truth.
+      </p>
+    </section>
+
+    <section class="comparison-grid">
+      <div class="website-card safe-site">
+        <div class="browser-bar">https://www.amazon.com/login</div>
+        <h3>Real Website Pattern</h3>
+        <p>Correct spelling, official domain, normal login flow, no unnecessary urgency.</p>
+      </div>
+
+      <div class="website-card fake-site">
+        <div class="browser-bar danger-link">https://arnazon-login-secure.ru</div>
+        <h3>Fake Website Pattern</h3>
+        <p>Typosquatting domain, fake branding, forced login, and suspicious extension.</p>
+      </div>
+    </section>
+
+    <section class="lesson-grid">
+      <div class="lesson-card"><span>01</span><i class="fa-solid fa-keyboard"></i><h3>Typosquatting</h3><p>Attackers use domains like g00gle.com, paypa1.com, or arnazon.com.</p></div>
+      <div class="lesson-card"><span>02</span><i class="fa-solid fa-lock"></i><h3>HTTPS Myth</h3><p>A padlock only means encrypted connection, not that the website is trustworthy.</p></div>
+      <div class="lesson-card"><span>03</span><i class="fa-solid fa-globe"></i><h3>Domain Check</h3><p>Always check the main domain before entering passwords.</p></div>
+      <div class="lesson-card"><span>04</span><i class="fa-solid fa-calendar-days"></i><h3>WHOIS Check</h3><p>Very new domains can be suspicious when pretending to be large companies.</p></div>
+      <div class="lesson-card"><span>05</span><i class="fa-solid fa-user-lock"></i><h3>Login Trap</h3><p>Fake login pages collect usernames, passwords, and OTPs.</p></div>
+      <div class="lesson-card"><span>06</span><i class="fa-solid fa-eye"></i><h3>Visual Clone</h3><p>Fake pages can copy logos and layouts, so URL checking is essential.</p></div>
+    </section>
+
+    <div class="hero-actions">
+      <a href="02_email_red_flags.html" class="secondary-btn"><i class="fa-solid fa-arrow-left"></i> Previous</a>
+      <button class="primary-btn" onclick="markLessonComplete('lesson3')">Mark Lesson Complete <i class="fa-solid fa-check"></i></button>
+      <a href="04_social_engineering.html" class="secondary-btn">Continue <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+  </main>
+
+  <script src="../script.js"></script>
+</body>
+</html>

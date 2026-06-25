@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Email Red Flags | PhishGuard-Lite</title>
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header class="navbar">
+    <a href="../index.html" class="brand">
+      <div class="brand-icon"><i class="fa-solid fa-shield-halved"></i></div>
+      <div>
+        <h1>PhishGuard-Lite</h1>
+        <p>Lesson 2 of 6</p>
+      </div>
+    </a>
+    <a href="03_fake_websites.html" class="nav-btn">Next Lesson <i class="fa-solid fa-arrow-right"></i></a>
+  </header>
+
+  <main class="container">
+    <section class="hero-content">
+      <p class="eyebrow">Lesson 02</p>
+      <h2>Email Red Flags</h2>
+      <p class="hero-text">
+        Phishing emails often contain warning signs. Learning these red flags helps you stop attacks before clicking anything.
+      </p>
+    </section>
+
+    <section class="email-simulator">
+      <div class="fake-email">
+        <div class="email-header">
+          <strong>From:</strong> support@paypa1-security.com
+        </div>
+        <div class="email-header">
+          <strong>Subject:</strong> Your account will be suspended in 24 hours!
+        </div>
+        <p>Dear Customer,</p>
+        <p>Your account has unusual activity. Click the link below immediately to verify your details.</p>
+        <a href="#" class="danger-link">https://paypal.com.verify-login-security.ru</a>
+        <p>Please download the attached verification form and submit your password.</p>
+        <button class="primary-btn">Verify Now</button>
+      </div>
+
+      <div class="feature-card">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <h3>Fake Email Inspector</h3>
+        <p>Red flags: suspicious sender, urgent threat, generic greeting, fake link, and dangerous attachment request.</p>
+      </div>
+    </section>
+
+    <section class="lesson-grid">
+      <div class="lesson-card"><span>01</span><i class="fa-solid fa-user-xmark"></i><h3>Wrong Sender</h3><p>Look for similar but incorrect domains like paypa1.com instead of paypal.com.</p></div>
+      <div class="lesson-card"><span>02</span><i class="fa-solid fa-clock"></i><h3>Urgent Language</h3><p>“Act now” and “24 hours left” are used to create panic.</p></div>
+      <div class="lesson-card"><span>03</span><i class="fa-solid fa-user"></i><h3>Generic Greeting</h3><p>Phishing emails often say “Dear Customer” instead of your real name.</p></div>
+      <div class="lesson-card"><span>04</span><i class="fa-solid fa-link"></i><h3>Suspicious Links</h3><p>Displayed text may look safe, but the actual link may lead elsewhere.</p></div>
+      <div class="lesson-card"><span>05</span><i class="fa-solid fa-file-zipper"></i><h3>Unexpected Attachments</h3><p>Be careful with .exe, .zip, and macro-enabled documents.</p></div>
+      <div class="lesson-card"><span>06</span><i class="fa-solid fa-spell-check"></i><h3>Poor Grammar</h3><p>Many phishing emails contain spelling mistakes and unnatural wording.</p></div>
+    </section>
+
+    <div class="hero-actions">
+      <a href="01_what_is_phishing.html" class="secondary-btn"><i class="fa-solid fa-arrow-left"></i> Previous</a>
+      <button class="primary-btn" onclick="markLessonComplete('lesson2')">Mark Lesson Complete <i class="fa-solid fa-check"></i></button>
+      <a href="03_fake_websites.html" class="secondary-btn">Continue <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+  </main>
+
+  <script src="../script.js"></script>
+</body>
+</html>
