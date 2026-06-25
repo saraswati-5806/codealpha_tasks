@@ -1,0 +1,90 @@
+Run started:2026-06-25 17:40:44.381520+00:00
+
+Test results:
+>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'admin123'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b105_hardcoded_password_string.html
+   Location: target_app/app.py:44:38
+43	            "demo_users": [
+44	                {"username": "admin", "password": "admin123"},
+45	                {"username": "student", "password": "student123"}
+
+--------------------------------------------------
+>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'student123'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b105_hardcoded_password_string.html
+   Location: target_app/app.py:45:40
+44	                {"username": "admin", "password": "admin123"},
+45	                {"username": "student", "password": "student123"}
+46	            ]
+
+--------------------------------------------------
+>> Issue: [B201:flask_debug_true] A Flask app appears to be run with debug=True, which exposes the Werkzeug debugger and allows the execution of arbitrary code.
+   Severity: High   Confidence: Medium
+   CWE: CWE-94 (https://cwe.mitre.org/data/definitions/94.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b201_flask_debug_true.html
+   Location: target_app/app.py:222:4
+221	    # F-004: Debug mode enabled.
+222	    app.run(debug=True)
+
+--------------------------------------------------
+>> Issue: [B324:hashlib] Use of weak MD5 hash for security. Consider usedforsecurity=False
+   Severity: High   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b324_hashlib.html
+   Location: target_app/auth.py:15:11
+14	    # F-003: Weak password hashing using MD5.
+15	    return hashlib.md5(password.encode()).hexdigest()
+16	
+
+--------------------------------------------------
+>> Issue: [B324:hashlib] Use of weak MD5 hash for security. Consider usedforsecurity=False
+   Severity: High   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b324_hashlib.html
+   Location: target_app/auth.py:20:11
+19	    # F-003: Compares MD5 hashes directly.
+20	    return hashlib.md5(password.encode()).hexdigest() == stored_hash
+21	
+
+--------------------------------------------------
+>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'super_secret_codealpha_key_12345'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b105_hardcoded_password_string.html
+   Location: target_app/config.py:5:17
+4	class Config:
+5	    SECRET_KEY = "super_secret_codealpha_key_12345"  # F-002: Hardcoded secret
+6	    SQLALCHEMY_DATABASE_URI = "sqlite:///securecodeaudit.db"
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b608_hardcoded_sql_expressions.html
+   Location: target_app/db.py:35:12
+34	    # F-001: SQL Injection via raw string concatenation.
+35	    query = "SELECT id, username, role FROM user WHERE username LIKE '%" + keyword + "%'"
+36	    result = db.session.execute(query)
+
+--------------------------------------------------
+
+Code scanned:
+	Total lines of code: 227
+	Total lines skipped (#nosec): 0
+	Total potential issues skipped due to specifically being disabled (e.g., #nosec BXXX): 0
+
+Run metrics:
+	Total issues (by severity):
+		Undefined: 0
+		Low: 3
+		Medium: 1
+		High: 3
+	Total issues (by confidence):
+		Undefined: 0
+		Low: 1
+		Medium: 4
+		High: 2
+Files skipped (0):
