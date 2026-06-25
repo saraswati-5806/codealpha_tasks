@@ -1,0 +1,239 @@
+{
+  "errors": [],
+  "generated_at": "2026-06-25T17:27:49Z",
+  "metrics": {
+    "_totals": {
+      "CONFIDENCE.HIGH": 2,
+      "CONFIDENCE.LOW": 1,
+      "CONFIDENCE.MEDIUM": 4,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 3,
+      "SEVERITY.LOW": 3,
+      "SEVERITY.MEDIUM": 1,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 227,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "target_app/app.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 3,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 1,
+      "SEVERITY.LOW": 2,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 150,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "target_app/auth.py": {
+      "CONFIDENCE.HIGH": 2,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 2,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 16,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "target_app/config.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 1,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 1,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 6,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "target_app/db.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 1,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 1,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 30,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "target_app/models.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 12,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "target_app/utils.py": {
+      "CONFIDENCE.HIGH": 0,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 0,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 13,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "43             \"demo_users\": [\n44                 {\"username\": \"admin\", \"password\": \"admin123\"},\n45                 {\"username\": \"student\", \"password\": \"student123\"}\n",
+      "col_offset": 38,
+      "end_col_offset": 48,
+      "filename": "target_app/app.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 259,
+        "link": "https://cwe.mitre.org/data/definitions/259.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Possible hardcoded password: 'admin123'",
+      "line_number": 44,
+      "line_range": [
+        44
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.4/plugins/b105_hardcoded_password_string.html",
+      "test_id": "B105",
+      "test_name": "hardcoded_password_string"
+    },
+    {
+      "code": "44                 {\"username\": \"admin\", \"password\": \"admin123\"},\n45                 {\"username\": \"student\", \"password\": \"student123\"}\n46             ]\n",
+      "col_offset": 40,
+      "end_col_offset": 50,
+      "filename": "target_app/app.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 259,
+        "link": "https://cwe.mitre.org/data/definitions/259.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Possible hardcoded password: 'student123'",
+      "line_number": 45,
+      "line_range": [
+        45
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.4/plugins/b105_hardcoded_password_string.html",
+      "test_id": "B105",
+      "test_name": "hardcoded_password_string"
+    },
+    {
+      "code": "221     # F-004: Debug mode enabled.\n222     app.run(debug=True)\n",
+      "col_offset": 4,
+      "end_col_offset": 23,
+      "filename": "target_app/app.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 94,
+        "link": "https://cwe.mitre.org/data/definitions/94.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "A Flask app appears to be run with debug=True, which exposes the Werkzeug debugger and allows the execution of arbitrary code.",
+      "line_number": 222,
+      "line_range": [
+        222
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.4/plugins/b201_flask_debug_true.html",
+      "test_id": "B201",
+      "test_name": "flask_debug_true"
+    },
+    {
+      "code": "14     # F-003: Weak password hashing using MD5.\n15     return hashlib.md5(password.encode()).hexdigest()\n16 \n",
+      "col_offset": 11,
+      "end_col_offset": 41,
+      "filename": "target_app/auth.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Use of weak MD5 hash for security. Consider usedforsecurity=False",
+      "line_number": 15,
+      "line_range": [
+        15
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.4/plugins/b324_hashlib.html",
+      "test_id": "B324",
+      "test_name": "hashlib"
+    },
+    {
+      "code": "19     # F-003: Compares MD5 hashes directly.\n20     return hashlib.md5(password.encode()).hexdigest() == stored_hash\n21 \n",
+      "col_offset": 11,
+      "end_col_offset": 41,
+      "filename": "target_app/auth.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Use of weak MD5 hash for security. Consider usedforsecurity=False",
+      "line_number": 20,
+      "line_range": [
+        20
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.4/plugins/b324_hashlib.html",
+      "test_id": "B324",
+      "test_name": "hashlib"
+    },
+    {
+      "code": "4 class Config:\n5     SECRET_KEY = \"super_secret_codealpha_key_12345\"  # F-002: Hardcoded secret\n6     SQLALCHEMY_DATABASE_URI = \"sqlite:///securecodeaudit.db\"\n",
+      "col_offset": 17,
+      "end_col_offset": 51,
+      "filename": "target_app/config.py",
+      "issue_confidence": "MEDIUM",
+      "issue_cwe": {
+        "id": 259,
+        "link": "https://cwe.mitre.org/data/definitions/259.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Possible hardcoded password: 'super_secret_codealpha_key_12345'",
+      "line_number": 5,
+      "line_range": [
+        5
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.4/plugins/b105_hardcoded_password_string.html",
+      "test_id": "B105",
+      "test_name": "hardcoded_password_string"
+    },
+    {
+      "code": "34     # F-001: SQL Injection via raw string concatenation.\n35     query = \"SELECT id, username, role FROM user WHERE username LIKE '%\" + keyword + \"%'\"\n36     result = db.session.execute(query)\n",
+      "col_offset": 12,
+      "end_col_offset": 72,
+      "filename": "target_app/db.py",
+      "issue_confidence": "LOW",
+      "issue_cwe": {
+        "id": 89,
+        "link": "https://cwe.mitre.org/data/definitions/89.html"
+      },
+      "issue_severity": "MEDIUM",
+      "issue_text": "Possible SQL injection vector through string-based query construction.",
+      "line_number": 35,
+      "line_range": [
+        35
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.4/plugins/b608_hardcoded_sql_expressions.html",
+      "test_id": "B608",
+      "test_name": "hardcoded_sql_expressions"
+    }
+  ]
+}
