@@ -16,6 +16,15 @@ import {
   Radio,
   FileDown,
   Network,
+  Play,
+  Pause,
+  Trash2,
+  Eye,
+  X,
+  Zap,
+  Timer,
+  Globe2,
+  ShieldAlert,
 } from "lucide-react";
 import {
   Chart as ChartJS,
@@ -77,8 +86,13 @@ function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [protocolFilter, setProtocolFilter] = useState("ALL");
   const [riskFilter, setRiskFilter] = useState("ALL");
+  const [isLive, setIsLive] = useState(true);
+  const [selectedPacket, setSelectedPacket] = useState(null);
+  const [sessionStartedAt] = useState(new Date());
 
   const loadPackets = async () => {
+    if (!isLive) return;
+
     setStatus("Refreshing live packet data...");
 
     try {
@@ -111,10 +125,13 @@ function App() {
 
   useEffect(() => {
     loadPackets();
-    const interval = setInterval(loadPackets, 3000);
+
+    const interval = setInterval(() => {
+      loadPackets();
+    }, 3000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isLive]);
 
   const filteredPackets = useMemo(() => {
     return packets.filter((packet) => {
@@ -125,7 +142,11 @@ function App() {
         packet.dst_ip?.toLowerCase().includes(keyword) ||
         packet.protocol?.toLowerCase().includes(keyword) ||
         packet.risk_flag?.toLowerCase().includes(keyword) ||
-        packet.alert_reason?.toLowerCase().includes(keyword);
+        packet.alert_reason?.toLowerCase().includes(keyword) ||
+        packet.payload?.toLowerCase().includes(keyword) ||
+        packet.src_port?.toString().includes(keyword) ||
+        packet.dst_port?.toString().includes(keyword) ||
+        packet.ttl?.toString().includes(keyword);
 
       const matchesProtocol =
         protocolFilter === "ALL" || packet.protocol === protocolFilter;
@@ -162,6 +183,23 @@ function App() {
   const topSourceIP = getTopItem(sourceCounts);
   const topPort = getTopItem(portCounts);
   const topProtocol = getTopItem(protocolCounts);
+
+  const uniqueHosts = new Set([
+    ...filteredPackets.map((packet) => packet.src_ip),
+    ...filteredPackets.map((packet) => packet.dst_ip),
+  ]).size;
+
+  const averageTTL =
+    filteredPackets.length > 0
+      ? Math.round(
+          filteredPackets.reduce(
+            (sum, packet) => sum + Number(packet.ttl || 0),
+            0
+          ) / filteredPackets.length
+        )
+      : 0;
+
+  const sessionDuration = getSessionDuration(sessionStartedAt);
 
   const chartData = {
     labels: Object.keys(protocolCounts).length
@@ -220,6 +258,12 @@ function App() {
     setRiskFilter("ALL");
   };
 
+  const clearDashboardView = () => {
+    setPackets([]);
+    setSelectedPacket(null);
+    setStatus("Dashboard view cleared. Click Resume Live Feed or Refresh Data.");
+  };
+
   const downloadCSV = () => {
     const headers = [
       "timestamp",
@@ -253,6 +297,9 @@ Total Visible Packets: ${totalPackets}
 Normal Packets: ${normalPackets}
 Suspicious Packets: ${suspiciousPackets}
 Alert Packets: ${alertPackets}
+Unique Hosts: ${uniqueHosts}
+Average TTL: ${averageTTL}
+Session Duration: ${sessionDuration}
 
 Threat Intelligence
 -------------------
@@ -296,7 +343,9 @@ This tool is for educational cybersecurity learning and should only be used on y
             </div>
             <div>
               <h2 className="font-bold">NetSniff-Lite</h2>
-              <p className="text-xs text-slate-400">CodeAlpha Task 1</p>
+              <p className="text-xs text-slate-400">
+                Smart Network Packet Analyzer
+              </p>
             </div>
           </div>
 
@@ -316,122 +365,31 @@ This tool is for educational cybersecurity learning and should only be used on y
       </nav>
 
       <section className="mx-auto max-w-7xl px-6 py-10">
-        <div className="rounded-3xl border border-cyan-400/20 bg-slate-900/70 p-8 shadow-2xl shadow-cyan-950/40 backdrop-blur-xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-300">
-            Live Network Packet Analyzer
-          </p>
-
-          <div className="mt-4 grid gap-6 lg:grid-cols-[1.4fr_0.6fr] lg:items-center">
-            <div>
-              <h1 className="text-4xl font-black md:text-6xl">
-                NetSniff-Lite Dashboard
-              </h1>
-              <p className="mt-4 max-w-3xl text-slate-300">
-                A beginner-friendly yet professional packet monitoring dashboard
-                powered by Scapy, Flask, React, Tailwind CSS, CSV logging, and
-                rule-based threat detection.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-cyan-400/20 bg-slate-950/70 p-5">
-              <p className="text-sm text-slate-400">Live Mode</p>
-              <h3 className="mt-1 text-2xl font-bold text-cyan-300">
-                Auto-refresh: 3s
-              </h3>
-              <p className="mt-2 text-sm text-slate-400">
-                Last updated: {lastUpdated}
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-6 flex flex-wrap gap-3">
-            <button onClick={loadPackets} className="btn-cyan">
-              <RefreshCw size={18} />
-              Refresh Data
-            </button>
-
-            <button
-              onClick={downloadCSV}
-              disabled={filteredPackets.length === 0}
-              className="btn-green disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              <Download size={18} />
-              Download CSV
-            </button>
-
-            <button
-              onClick={downloadSecurityReport}
-              disabled={filteredPackets.length === 0}
-              className="btn-purple disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              <FileDown size={18} />
-              Security Report
-            </button>
-          </div>
-        </div>
+        <LandingHero
+          isLive={isLive}
+          lastUpdated={lastUpdated}
+          loadPackets={loadPackets}
+          setIsLive={setIsLive}
+          clearDashboardView={clearDashboardView}
+          downloadCSV={downloadCSV}
+          downloadSecurityReport={downloadSecurityReport}
+          filteredPackets={filteredPackets}
+        />
 
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           <StatusBox status={status} lastUpdated={lastUpdated} />
           <ApiBox apiStatus={apiStatus} />
         </div>
 
-        <div className="mt-6 rounded-3xl border border-cyan-400/20 bg-slate-900/70 p-5 backdrop-blur-xl">
-          <div className="grid gap-4 lg:grid-cols-4">
-            <div className="relative lg:col-span-2">
-              <Search
-                className="absolute left-3 top-3 text-slate-400"
-                size={18}
-              />
-              <input
-                type="text"
-                placeholder="Search IP, protocol, risk, alert reason..."
-                value={searchTerm}
-                onChange={(event) => setSearchTerm(event.target.value)}
-                className="input pl-10"
-              />
-            </div>
-
-            <div className="relative">
-              <Filter
-                className="absolute left-3 top-3 text-slate-400"
-                size={18}
-              />
-              <select
-                value={protocolFilter}
-                onChange={(event) => setProtocolFilter(event.target.value)}
-                className="input pl-10"
-              >
-                <option value="ALL">All Protocols</option>
-                <option value="TCP">TCP</option>
-                <option value="UDP">UDP</option>
-                <option value="ICMP">ICMP</option>
-                <option value="ARP">ARP</option>
-                <option value="OTHER">OTHER</option>
-              </select>
-            </div>
-
-            <div className="flex gap-3">
-              <select
-                value={riskFilter}
-                onChange={(event) => setRiskFilter(event.target.value)}
-                className="input"
-              >
-                <option value="ALL">All Risk Levels</option>
-                <option value="NORMAL">NORMAL</option>
-                <option value="SUSPICIOUS">SUSPICIOUS</option>
-                <option value="ALERT">ALERT</option>
-              </select>
-
-              <button
-                onClick={clearFilters}
-                className="rounded-xl border border-red-400/40 bg-red-400/10 px-4 text-red-200 hover:bg-red-400/20"
-                title="Clear filters"
-              >
-                <XCircle size={20} />
-              </button>
-            </div>
-          </div>
-        </div>
+        <ControlPanel
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          protocolFilter={protocolFilter}
+          setProtocolFilter={setProtocolFilter}
+          riskFilter={riskFilter}
+          setRiskFilter={setRiskFilter}
+          clearFilters={clearFilters}
+        />
 
         <div className="mt-6 grid gap-5 md:grid-cols-4">
           <Card
@@ -460,28 +418,17 @@ This tool is for educational cybersecurity learning and should only be used on y
           />
         </div>
 
-        <div className="mt-6 grid gap-5 md:grid-cols-4">
-          <MiniCard
-            title="Top Source IP"
-            value={topSourceIP.label}
-            sub={`${topSourceIP.count} packets`}
-          />
-          <MiniCard
-            title="Top Destination Port"
-            value={topPort.label}
-            sub={`${topPort.count} hits`}
-          />
-          <MiniCard
-            title="Most Used Protocol"
-            value={topProtocol.label}
-            sub={`${topProtocol.count} packets`}
-          />
-          <MiniCard
-            title="Risk Ratio"
-            value={`${alertPackets + suspiciousPackets}/${totalPackets}`}
-            sub="flagged packets"
-          />
-        </div>
+        <ThreatIntelligenceGrid
+          topSourceIP={topSourceIP}
+          topPort={topPort}
+          topProtocol={topProtocol}
+          uniqueHosts={uniqueHosts}
+          averageTTL={averageTTL}
+          sessionDuration={sessionDuration}
+          alertPackets={alertPackets}
+          suspiciousPackets={suspiciousPackets}
+          totalPackets={totalPackets}
+        />
 
         <div className="mt-8 grid gap-6 lg:grid-cols-2">
           <Panel
@@ -500,28 +447,258 @@ This tool is for educational cybersecurity learning and should only be used on y
         </div>
 
         <AlertPanel packets={filteredPackets} />
-        <PacketTable packets={filteredPackets} riskBadge={riskBadge} />
 
-        <div className="mt-8 rounded-3xl border border-amber-400/20 bg-amber-400/10 p-5 text-amber-100">
-          <div className="flex items-start gap-3">
-            <Lock className="mt-1" />
-            <div>
-              <h3 className="font-bold">Ethical Usage Notice</h3>
-              <p className="mt-1 text-sm text-amber-100/80">
-                NetSniff-Lite is created only for educational cybersecurity
-                learning. Use it only on your own network or in environments
-                where you have clear permission.
-              </p>
-            </div>
-          </div>
-        </div>
+        <PacketTable
+          packets={filteredPackets}
+          riskBadge={riskBadge}
+          setSelectedPacket={setSelectedPacket}
+        />
+
+        <EthicalNotice />
 
         <footer className="mt-10 border-t border-slate-800 pt-6 text-center text-sm text-slate-500">
           NetSniff-Lite • CodeAlpha Cyber Security Internship • Built with
           Python, Scapy, Flask, React, Tailwind CSS v4 and Chart.js
         </footer>
       </section>
+
+      {selectedPacket && (
+        <PacketDrawer
+          packet={selectedPacket}
+          closeDrawer={() => setSelectedPacket(null)}
+          riskBadge={riskBadge}
+        />
+      )}
     </main>
+  );
+}
+
+function LandingHero({
+  isLive,
+  lastUpdated,
+  loadPackets,
+  setIsLive,
+  clearDashboardView,
+  downloadCSV,
+  downloadSecurityReport,
+  filteredPackets,
+}) {
+  return (
+    <div className="rounded-3xl border border-cyan-400/20 bg-slate-900/70 p-8 shadow-2xl shadow-cyan-950/40 backdrop-blur-xl">
+      <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-300">
+        CodeAlpha Cyber Security Task 1
+      </p>
+
+      <div className="mt-4 grid gap-6 lg:grid-cols-[1.4fr_0.6fr] lg:items-center">
+        <div>
+          <h1 className="text-4xl font-black md:text-6xl">
+            NetSniff-Lite Dashboard
+          </h1>
+
+          <p className="mt-4 max-w-3xl text-slate-300">
+            A professional network packet analyzer that captures live packets,
+            detects suspicious activity, visualizes protocol behavior, and
+            exports clean cybersecurity reports.
+          </p>
+
+          <div className="mt-5 flex flex-wrap gap-3 text-sm text-slate-300">
+            <span className="hero-pill">Scapy Packet Capture</span>
+            <span className="hero-pill">Flask API</span>
+            <span className="hero-pill">Threat Rules</span>
+            <span className="hero-pill">React Dashboard</span>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-cyan-400/20 bg-slate-950/70 p-5">
+          <p className="text-sm text-slate-400">Live Monitoring</p>
+
+          <h3
+            className={`mt-1 text-2xl font-bold ${
+              isLive ? "text-emerald-300" : "text-yellow-300"
+            }`}
+          >
+            {isLive ? "Active" : "Paused"}
+          </h3>
+
+          <p className="mt-2 text-sm text-slate-400">
+            Auto-refresh: 3 seconds
+          </p>
+
+          <p className="mt-1 text-sm text-slate-400">
+            Last updated: {lastUpdated}
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-6 flex flex-wrap gap-3">
+        <button onClick={loadPackets} className="btn-cyan">
+          <RefreshCw size={18} />
+          Refresh Data
+        </button>
+
+        <button onClick={() => setIsLive(true)} className="btn-green">
+          <Play size={18} />
+          Resume Live Feed
+        </button>
+
+        <button onClick={() => setIsLive(false)} className="btn-yellow">
+          <Pause size={18} />
+          Pause Feed
+        </button>
+
+        <button onClick={clearDashboardView} className="btn-red">
+          <Trash2 size={18} />
+          Clear View
+        </button>
+
+        <button
+          onClick={downloadCSV}
+          disabled={filteredPackets.length === 0}
+          className="btn-green disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          <Download size={18} />
+          CSV
+        </button>
+
+        <button
+          onClick={downloadSecurityReport}
+          disabled={filteredPackets.length === 0}
+          className="btn-purple disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          <FileDown size={18} />
+          Security Report
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ControlPanel({
+  searchTerm,
+  setSearchTerm,
+  protocolFilter,
+  setProtocolFilter,
+  riskFilter,
+  setRiskFilter,
+  clearFilters,
+}) {
+  return (
+    <div className="mt-6 rounded-3xl border border-cyan-400/20 bg-slate-900/70 p-5 backdrop-blur-xl">
+      <div className="grid gap-4 lg:grid-cols-4">
+        <div className="relative lg:col-span-2">
+          <Search className="absolute left-3 top-3 text-slate-400" size={18} />
+          <input
+            type="text"
+            placeholder="Search IP, protocol, payload, port, TTL, risk..."
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+            className="input pl-10"
+          />
+        </div>
+
+        <div className="relative">
+          <Filter className="absolute left-3 top-3 text-slate-400" size={18} />
+          <select
+            value={protocolFilter}
+            onChange={(event) => setProtocolFilter(event.target.value)}
+            className="input pl-10"
+          >
+            <option value="ALL">All Protocols</option>
+            <option value="TCP">TCP</option>
+            <option value="UDP">UDP</option>
+            <option value="ICMP">ICMP</option>
+            <option value="ARP">ARP</option>
+            <option value="OTHER">OTHER</option>
+          </select>
+        </div>
+
+        <div className="flex gap-3">
+          <select
+            value={riskFilter}
+            onChange={(event) => setRiskFilter(event.target.value)}
+            className="input"
+          >
+            <option value="ALL">All Risk Levels</option>
+            <option value="NORMAL">NORMAL</option>
+            <option value="SUSPICIOUS">SUSPICIOUS</option>
+            <option value="ALERT">ALERT</option>
+          </select>
+
+          <button
+            onClick={clearFilters}
+            className="rounded-xl border border-red-400/40 bg-red-400/10 px-4 text-red-200 hover:bg-red-400/20"
+            title="Clear filters"
+          >
+            <XCircle size={20} />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ThreatIntelligenceGrid({
+  topSourceIP,
+  topPort,
+  topProtocol,
+  uniqueHosts,
+  averageTTL,
+  sessionDuration,
+  alertPackets,
+  suspiciousPackets,
+  totalPackets,
+}) {
+  return (
+    <div className="mt-6 grid gap-5 md:grid-cols-4">
+      <MiniCard
+        icon={<Globe2 />}
+        title="Top Source IP"
+        value={topSourceIP.label}
+        sub={`${topSourceIP.count} packets`}
+      />
+      <MiniCard
+        icon={<Zap />}
+        title="Top Destination Port"
+        value={topPort.label}
+        sub={`${topPort.count} hits`}
+      />
+      <MiniCard
+        icon={<Radio />}
+        title="Most Used Protocol"
+        value={topProtocol.label}
+        sub={`${topProtocol.count} packets`}
+      />
+      <MiniCard
+        icon={<ShieldAlert />}
+        title="Risk Ratio"
+        value={`${alertPackets + suspiciousPackets}/${totalPackets}`}
+        sub="flagged packets"
+      />
+      <MiniCard
+        icon={<Network />}
+        title="Unique Hosts"
+        value={uniqueHosts}
+        sub="observed devices"
+      />
+      <MiniCard
+        icon={<Activity />}
+        title="Average TTL"
+        value={averageTTL}
+        sub="network distance signal"
+      />
+      <MiniCard
+        icon={<Timer />}
+        title="Session Time"
+        value={sessionDuration}
+        sub="dashboard runtime"
+      />
+      <MiniCard
+        icon={<Server />}
+        title="SOC View"
+        value="Enabled"
+        sub="threat intelligence mode"
+      />
+    </div>
   );
 }
 
@@ -543,6 +720,14 @@ function getTopItem(counts) {
   const [label, count] = entries.sort((a, b) => b[1] - a[1])[0];
 
   return { label, count };
+}
+
+function getSessionDuration(startDate) {
+  const seconds = Math.floor((new Date() - startDate) / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+
+  return `${minutes}m ${remainingSeconds}s`;
 }
 
 function downloadFile(content, filename, type) {
@@ -594,14 +779,15 @@ function Card({ icon, title, value, color }) {
     <div className="rounded-3xl border border-cyan-400/20 bg-slate-900/70 p-5 shadow-xl shadow-slate-950/40 backdrop-blur-xl transition hover:-translate-y-1 hover:border-cyan-300/40">
       <div className={`mb-4 ${color}`}>{icon}</div>
       <p className="text-sm text-slate-400">{title}</p>
-      <h2 className="text-3xl font-black">{value}</h2>
+      <h2 className="counter-number">{value}</h2>
     </div>
   );
 }
 
-function MiniCard({ title, value, sub }) {
+function MiniCard({ icon, title, value, sub }) {
   return (
-    <div className="rounded-2xl border border-slate-700/70 bg-slate-900/60 p-4">
+    <div className="rounded-2xl border border-slate-700/70 bg-slate-900/60 p-4 transition hover:border-cyan-300/40 hover:bg-slate-900">
+      <div className="mb-2 text-cyan-300">{icon}</div>
       <p className="text-sm text-slate-400">{title}</p>
       <h3 className="mt-1 truncate text-xl font-bold text-white">{value}</h3>
       <p className="mt-1 text-xs text-cyan-300">{sub}</p>
@@ -628,7 +814,7 @@ function AlertPanel({ packets }) {
     <div className="mt-8 rounded-3xl border border-red-400/20 bg-slate-900/70 p-6 backdrop-blur-xl">
       <h3 className="mb-4 flex items-center gap-2 text-xl font-semibold">
         <AlertTriangle className="text-red-300" />
-        Alert Panel
+        Recent Threat Feed
       </h3>
 
       <div className="grid gap-3">
@@ -637,7 +823,7 @@ function AlertPanel({ packets }) {
             No alerts detected yet.
           </p>
         ) : (
-          riskyPackets.map((packet, index) => (
+          riskyPackets.slice(-8).map((packet, index) => (
             <div
               key={`${packet.timestamp}-${index}`}
               className="rounded-2xl border border-red-400/20 bg-red-500/10 p-4"
@@ -646,7 +832,8 @@ function AlertPanel({ packets }) {
                 {packet.risk_flag}: {packet.alert_reason}
               </p>
               <p className="mt-1 text-sm text-slate-300">
-                {packet.src_ip} → {packet.dst_ip} | {packet.protocol}
+                {packet.timestamp} • {packet.src_ip} → {packet.dst_ip} •{" "}
+                {packet.protocol}
               </p>
             </div>
           ))
@@ -656,7 +843,7 @@ function AlertPanel({ packets }) {
   );
 }
 
-function PacketTable({ packets, riskBadge }) {
+function PacketTable({ packets, riskBadge, setSelectedPacket }) {
   return (
     <div className="mt-8 rounded-3xl border border-cyan-400/20 bg-slate-900/70 p-6 backdrop-blur-xl">
       <h3 className="mb-4 flex items-center gap-2 text-xl font-semibold">
@@ -665,7 +852,7 @@ function PacketTable({ packets, riskBadge }) {
       </h3>
 
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[900px] border-collapse text-left text-sm">
+        <table className="w-full min-w-[1000px] border-collapse text-left text-sm">
           <thead>
             <tr className="border-b border-slate-700 text-slate-300">
               <th className="p-3">Time</th>
@@ -674,13 +861,14 @@ function PacketTable({ packets, riskBadge }) {
               <th className="p-3">Protocol</th>
               <th className="p-3">TTL</th>
               <th className="p-3">Risk</th>
+              <th className="p-3">Details</th>
             </tr>
           </thead>
 
           <tbody>
             {packets.length === 0 ? (
               <tr>
-                <td colSpan="6" className="p-8 text-center text-slate-400">
+                <td colSpan="7" className="p-8 text-center text-slate-400">
                   Waiting for packets... Start the sniffer and click Refresh
                   Data.
                 </td>
@@ -709,11 +897,101 @@ function PacketTable({ packets, riskBadge }) {
                       {packet.risk_flag}
                     </span>
                   </td>
+                  <td className="p-3">
+                    <button
+                      onClick={() => setSelectedPacket(packet)}
+                      className="rounded-lg border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-cyan-200 hover:bg-cyan-400/20"
+                    >
+                      <Eye size={16} />
+                    </button>
+                  </td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
+      </div>
+    </div>
+  );
+}
+
+function PacketDrawer({ packet, closeDrawer, riskBadge }) {
+  return (
+    <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm">
+      <div className="ml-auto h-full w-full max-w-xl overflow-y-auto border-l border-cyan-400/20 bg-slate-950 p-6 shadow-2xl">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold text-cyan-200">Packet Details</h2>
+
+          <button
+            onClick={closeDrawer}
+            className="rounded-xl border border-red-400/30 bg-red-400/10 p-2 text-red-200 hover:bg-red-400/20"
+          >
+            <X />
+          </button>
+        </div>
+
+        <div className="mt-6 grid gap-4">
+          <Detail label="Timestamp" value={packet.timestamp} />
+          <Detail label="Source IP" value={`${packet.src_ip}:${packet.src_port}`} />
+          <Detail
+            label="Destination IP"
+            value={`${packet.dst_ip}:${packet.dst_port}`}
+          />
+          <Detail label="Protocol" value={packet.protocol} />
+          <Detail label="TTL" value={packet.ttl} />
+
+          <div className="rounded-2xl border border-slate-700 bg-slate-900 p-4">
+            <p className="text-sm text-slate-400">Risk</p>
+            <span
+              className={`mt-2 inline-block rounded-full border px-3 py-1 text-xs font-semibold ${riskBadge(
+                packet.risk_flag
+              )}`}
+            >
+              {packet.risk_flag}
+            </span>
+          </div>
+
+          <Detail label="Alert Reason" value={packet.alert_reason} />
+          <Detail label="Payload" value={packet.payload || "No payload found"} />
+          <Detail
+            label="Payload HEX Preview"
+            value={toHex(packet.payload || "")}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Detail({ label, value }) {
+  return (
+    <div className="rounded-2xl border border-slate-700 bg-slate-900 p-4">
+      <p className="text-sm text-slate-400">{label}</p>
+      <p className="mt-1 break-words text-white">{value}</p>
+    </div>
+  );
+}
+
+function toHex(text) {
+  return text
+    .split("")
+    .map((character) => character.charCodeAt(0).toString(16).padStart(2, "0"))
+    .join(" ");
+}
+
+function EthicalNotice() {
+  return (
+    <div className="mt-8 rounded-3xl border border-amber-400/20 bg-amber-400/10 p-5 text-amber-100">
+      <div className="flex items-start gap-3">
+        <Lock className="mt-1" />
+        <div>
+          <h3 className="font-bold">Ethical Usage Notice</h3>
+          <p className="mt-1 text-sm text-amber-100/80">
+            NetSniff-Lite is created only for educational cybersecurity
+            learning. Use it only on your own network or in environments where
+            you have clear permission.
+          </p>
+        </div>
       </div>
     </div>
   );
