@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Email Simulator | PhishGuard-Lite</title>
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body onload="loadEmailScenario()">
+  <header class="navbar">
+    <a href="../index.html" class="brand">
+      <div class="brand-icon"><i class="fa-solid fa-shield-halved"></i></div>
+      <div>
+        <h1>PhishGuard-Lite</h1>
+        <p>Email Simulator</p>
+      </div>
+    </a>
+    <a href="09_website_detector.html" class="nav-btn">Website Detector</a>
+  </header>
+
+  <main class="container">
+    <section class="hero-content">
+      <p class="eyebrow">Interactive Email Training</p>
+      <h2>Is This Email Safe or Phishing?</h2>
+      <p class="hero-text">Read each email carefully and choose whether it is safe or phishing.</p>
+    </section>
+
+    <section id="emailSimulatorArea" class="email-simulator">
+      <div class="fake-email">
+        <h3 id="emailTitle"></h3>
+        <div class="email-header"><strong>From:</strong> <span id="emailSender"></span></div>
+        <div class="email-header"><strong>Subject:</strong> <span id="emailSubject"></span></div>
+        <p id="emailBody"></p>
+
+        <div class="hero-actions">
+          <button onclick="answerEmail('safe')" class="primary-btn">Safe</button>
+          <button onclick="answerEmail('phishing')" class="secondary-btn">Phishing</button>
+        </div>
+
+        <div id="emailFeedback" class="feedback-box hidden"></div>
+      </div>
+
+      <div class="feature-card">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <h3>Fake Email Inspector</h3>
+        <p>Click the clues below to learn what makes a phishing email dangerous.</p>
+
+        <div class="inspector-list">
+          <button onclick="showInspectorTip('sender')">Suspicious Sender</button>
+          <button onclick="showInspectorTip('subject')">Urgent Subject</button>
+          <button onclick="showInspectorTip('link')">Fake Link</button>
+          <button onclick="showInspectorTip('attachment')">Attachment Risk</button>
+          <button onclick="showInspectorTip('greeting')">Generic Greeting</button>
+        </div>
+
+        <div id="inspectorTip" class="feedback-box hidden"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../script.js"></script>
+  <script src="../simulator.js"></script>
+</body>
+</html>

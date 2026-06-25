@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interactive Quiz | PhishGuard-Lite</title>
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header class="navbar">
+    <a href="../index.html" class="brand">
+      <div class="brand-icon"><i class="fa-solid fa-shield-halved"></i></div>
+      <div>
+        <h1>PhishGuard-Lite</h1>
+        <p>Final Awareness Quiz</p>
+      </div>
+    </a>
+    <a href="08_email_simulator.html" class="nav-btn">Email Simulator</a>
+  </header>
+
+  <main class="container">
+    <section class="hero-content">
+      <p class="eyebrow">Smart Quiz Engine</p>
+      <h2>Test Your Phishing Awareness</h2>
+      <p class="hero-text">Answer 10 questions. Score 7/10 or more to unlock your certificate.</p>
+    </section>
+
+    <section id="quizArea" class="quiz-shell">
+      <div class="quiz-header">
+        <span id="quizProgress">Question 1 of 10</span>
+        <span id="liveScore">Score: 0</span>
+      </div>
+
+      <h3 id="questionBox"></h3>
+
+      <div id="optionsBox" class="options-grid"></div>
+
+      <div id="explanationBox" class="feedback-box hidden"></div>
+
+      <button id="nextQuestionBtn" class="primary-btn hidden">
+        Next Question <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </section>
+
+    <section id="resultBox" class="hidden"></section>
+  </main>
+
+  <script src="../script.js"></script>
+  <script src="../quiz.js"></script>
+</body>
+</html>

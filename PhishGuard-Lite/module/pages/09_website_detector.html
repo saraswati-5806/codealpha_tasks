@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Website Detector | PhishGuard-Lite</title>
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body onload="loadWebsiteScenario()">
+  <header class="navbar">
+    <a href="../index.html" class="brand">
+      <div class="brand-icon"><i class="fa-solid fa-shield-halved"></i></div>
+      <div>
+        <h1>PhishGuard-Lite</h1>
+        <p>Fake Website Detector</p>
+      </div>
+    </a>
+    <a href="07_quiz.html" class="nav-btn">Final Quiz</a>
+  </header>
+
+  <main class="container">
+    <section class="hero-content">
+      <p class="eyebrow">Website Safety Training</p>
+      <h2>Real Website or Fake Website?</h2>
+      <p class="hero-text">Inspect the URL, login form, and context before deciding.</p>
+    </section>
+
+    <section id="websiteDetectorArea" class="comparison-grid">
+      <div class="website-card">
+        <h3 id="websiteTitle"></h3>
+        <div id="websiteURL" class="browser-bar"></div>
+        <p id="websiteVisual"></p>
+
+        <div class="hero-actions">
+          <button onclick="answerWebsite('real')" class="primary-btn">Real</button>
+          <button onclick="answerWebsite('fake')" class="secondary-btn">Fake</button>
+        </div>
+
+        <div id="websiteFeedback" class="feedback-box hidden"></div>
+      </div>
+
+      <div class="feature-card">
+        <i class="fa-solid fa-window-restore"></i>
+        <h3>Fake Website Detector</h3>
+        <p>Click the checks below to understand fake website signs.</p>
+
+        <div class="inspector-list">
+          <button onclick="showInspectorTip('url')">Check Domain</button>
+          <button onclick="showInspectorTip('ssl')">HTTPS Myth</button>
+          <button onclick="showInspectorTip('form')">Login Form Risk</button>
+        </div>
+
+        <div id="inspectorTip" class="feedback-box hidden"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="../script.js"></script>
+  <script src="../simulator.js"></script>
+</body>
+</html>
