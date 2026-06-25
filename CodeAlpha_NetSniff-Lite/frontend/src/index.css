@@ -11,7 +11,6 @@ html {
 body {
   margin: 0;
   background: #020617;
-  color: white;
   font-family: Inter, system-ui, sans-serif;
 }
 
@@ -33,6 +32,14 @@ input {
   font-size: 1.875rem;
   font-weight: 900;
   animation: popIn 0.4s ease;
+}
+
+.flow-node {
+  border-radius: 1rem;
+  border: 1px solid rgb(34 211 238 / 0.2);
+  background: rgb(15 23 42 / 0.7);
+  padding: 1rem;
+  animation: floatNode 2.5s ease-in-out infinite;
 }
 
 .btn-cyan,
@@ -122,5 +129,16 @@ input {
   100% {
     transform: scale(1);
     opacity: 1;
+  }
+}
+
+@keyframes floatNode {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
   }
 }
