@@ -362,7 +362,7 @@ This tool is for educational cybersecurity learning and should only be used on y
       : "bg-slate-100 text-slate-950";
 
   return (
-    <main className={`min-h-screen overflow-hidden ${themeClass}`}>
+    <main className={`app-shell ${theme === "dark" ? "app-dark" : "app-light"}`}>
       {theme === "dark" && (
         <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.22),_transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(168,85,247,0.18),_transparent_35%)]" />
       )}
@@ -481,8 +481,30 @@ This tool is for educational cybersecurity learning and should only be used on y
 
         <EthicalNotice />
 
-        <footer className="mt-10 border-t border-slate-800 pt-6 text-center text-sm text-slate-500">
-          NetSniff-Lite • CodeAlpha Cyber Security Internship • Python • Scapy • Flask • React • Tailwind CSS v4
+        <footer className="app-footer mt-10 border-t pt-8 pb-6">
+          <div className="flex flex-col items-center gap-3">
+          <h3 className="text-xl font-bold text-cyan-300">NetSniff-Lite</h3>
+
+          <p className="max-w-2xl text-center text-sm">
+             Professional Network Traffic Analyzer built for monitoring, inspecting,
+             and understanding live network packets through an intuitive security
+             dashboard.
+          </p>
+
+          <div className="flex flex-wrap justify-center gap-3 pt-2">
+            <span className="hero-pill">Live Monitoring</span>
+            <span className="hero-pill">Threat Detection</span>
+            <span className="hero-pill">Packet Analytics</span>
+            <span className="hero-pill">Security Reports</span>
+          </div>
+
+          <p className="pt-3 text-xs">
+            © {new Date().getFullYear()} NetSniff-Lite • Built by
+            <span className="font-semibold text-cyan-300">
+            {" "}Saraswati Panigrahi
+            </span>
+          </p>
+          </div>
         </footer>
       </section>
 

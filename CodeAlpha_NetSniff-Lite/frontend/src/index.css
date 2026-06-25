@@ -10,7 +10,6 @@ html {
 
 body {
   margin: 0;
-  background: #020617;
   font-family: Inter, system-ui, sans-serif;
 }
 
@@ -20,11 +19,63 @@ input {
   font-family: inherit;
 }
 
+.app-shell {
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.app-dark {
+  background: #020617;
+  color: white;
+}
+
+.app-light {
+  background: linear-gradient(180deg, #eef6ff 0%, #f8fafc 100%);
+  color: #0f172a;
+}
+
+/* Light mode overrides for your existing Tailwind dark cards */
+.app-light [class*="bg-slate-900"] {
+  background: rgba(255, 255, 255, 0.92) !important;
+  color: #0f172a !important;
+  border-color: rgba(14, 165, 233, 0.22) !important;
+}
+
+.app-light [class*="bg-slate-950"] {
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+
+.app-light [class*="text-white"] {
+  color: #0f172a !important;
+}
+
+.app-light [class*="text-slate-300"],
+.app-light [class*="text-slate-400"],
+.app-light [class*="text-slate-500"] {
+  color: #475569 !important;
+}
+
+.app-light nav {
+  background: rgba(255, 255, 255, 0.92) !important;
+  color: #0f172a !important;
+  border-color: rgba(14, 165, 233, 0.22) !important;
+}
+
+.app-light footer {
+  color: #64748b !important;
+  border-color: #cbd5e1 !important;
+}
+
 .hero-pill {
   border-radius: 999px;
-  border: 1px solid rgb(34 211 238 / 0.25);
-  background: rgb(34 211 238 / 0.08);
+  border: 1px solid rgb(34 211 238 / 0.35);
+  background: rgb(34 211 238 / 0.1);
   padding: 0.45rem 0.8rem;
+  color: rgb(8 145 178);
+}
+
+.app-dark .hero-pill {
   color: rgb(165 243 252);
 }
 
@@ -36,88 +87,187 @@ input {
 
 .flow-node {
   border-radius: 1rem;
-  border: 1px solid rgb(34 211 238 / 0.2);
+  border: 1px solid rgb(34 211 238 / 0.25);
   background: rgb(15 23 42 / 0.7);
   padding: 1rem;
   animation: floatNode 2.5s ease-in-out infinite;
 }
 
+.app-light .flow-node {
+  background: #ffffff;
+  color: #0f172a;
+}
+
+/* Buttons */
 .btn-cyan,
 .btn-green,
 .btn-purple,
 .btn-yellow,
 .btn-red {
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   border-radius: 0.75rem;
   padding: 0.75rem 1rem;
   transition: 0.2s ease;
+  white-space: nowrap;
 }
 
 .btn-cyan {
-  border: 1px solid rgb(34 211 238 / 0.4);
-  background: rgb(34 211 238 / 0.1);
+  border: 1px solid rgb(34 211 238 / 0.45);
+  background: rgb(34 211 238 / 0.12);
+  color: rgb(8 145 178);
+}
+
+.app-dark .btn-cyan {
   color: rgb(165 243 252);
 }
 
 .btn-cyan:hover {
-  background: rgb(34 211 238 / 0.2);
+  background: rgb(34 211 238 / 0.22);
 }
 
 .btn-green {
-  border: 1px solid rgb(52 211 153 / 0.4);
-  background: rgb(52 211 153 / 0.1);
+  border: 1px solid rgb(52 211 153 / 0.45);
+  background: rgb(52 211 153 / 0.12);
+  color: rgb(5 150 105);
+}
+
+.app-dark .btn-green {
   color: rgb(167 243 208);
 }
 
 .btn-green:hover {
-  background: rgb(52 211 153 / 0.2);
+  background: rgb(52 211 153 / 0.22);
 }
 
 .btn-purple {
-  border: 1px solid rgb(168 85 247 / 0.4);
-  background: rgb(168 85 247 / 0.1);
+  border: 1px solid rgb(168 85 247 / 0.45);
+  background: rgb(168 85 247 / 0.12);
+  color: rgb(126 34 206);
+}
+
+.app-dark .btn-purple {
   color: rgb(221 214 254);
 }
 
 .btn-purple:hover {
-  background: rgb(168 85 247 / 0.2);
+  background: rgb(168 85 247 / 0.22);
 }
 
 .btn-yellow {
-  border: 1px solid rgb(250 204 21 / 0.4);
-  background: rgb(250 204 21 / 0.1);
+  border: 1px solid rgb(250 204 21 / 0.45);
+  background: rgb(250 204 21 / 0.14);
+  color: rgb(161 98 7);
+}
+
+.app-dark .btn-yellow {
   color: rgb(254 240 138);
 }
 
 .btn-yellow:hover {
-  background: rgb(250 204 21 / 0.2);
+  background: rgb(250 204 21 / 0.24);
 }
 
 .btn-red {
-  border: 1px solid rgb(248 113 113 / 0.4);
-  background: rgb(248 113 113 / 0.1);
+  border: 1px solid rgb(248 113 113 / 0.45);
+  background: rgb(248 113 113 / 0.12);
+  color: rgb(185 28 28);
+}
+
+.app-dark .btn-red {
   color: rgb(254 202 202);
 }
 
 .btn-red:hover {
-  background: rgb(248 113 113 / 0.2);
+  background: rgb(248 113 113 / 0.22);
 }
 
+/* Inputs and filters */
 .input {
   width: 100%;
+  min-width: 0;
   border-radius: 0.75rem;
   border: 1px solid rgb(51 65 85);
   background: rgb(2 6 23);
-  padding: 0.75rem 1rem;
+  padding: 0.78rem 1rem;
   color: white;
   outline: none;
   transition: 0.2s ease;
 }
 
+.input.pl-10 {
+  padding-left: 2.8rem !important;
+}
+
 .input:focus {
   border-color: rgb(34 211 238);
+}
+
+.app-light .input {
+  background: #ffffff;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+
+.app-light .input::placeholder {
+  color: #64748b;
+}
+
+select.input {
+  cursor: pointer;
+}
+
+/* Make filter/search section clean on all screen sizes */
+@media (max-width: 1024px) {
+  .grid.lg\:grid-cols-4 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .lg\:col-span-2 {
+    grid-column: span 1 / span 1 !important;
+  }
+}
+
+/* Tables */
+table {
+  border-spacing: 0;
+}
+
+.app-light table {
+  color: #0f172a;
+}
+
+.app-light thead tr {
+  color: #334155 !important;
+}
+
+.app-light tbody tr:hover {
+  background: #e0f2fe !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #020617;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #0891b2;
+  border-radius: 999px;
+}
+
+.app-light ::-webkit-scrollbar-track {
+  background: #e2e8f0;
+}
+
+.app-light ::-webkit-scrollbar-thumb {
+  background: #0ea5e9;
 }
 
 @keyframes popIn {
@@ -141,4 +291,36 @@ input {
   50% {
     transform: translateY(-4px);
   }
+}
+
+.app-footer {
+  color: #94a3b8;
+  border-color: #1e293b;
+}
+
+.app-light .app-footer {
+  color: #334155 !important;
+  border-color: #cbd5e1 !important;
+}
+
+.app-light .app-footer p {
+  color: #334155 !important;
+}
+
+.app-light .app-footer .hero-pill {
+  background: #e0f2fe !important;
+  border-color: #7dd3fc !important;
+  color: #0369a1 !important;
+}
+
+.app-light .text-amber-100 {
+  color: #92400e !important;
+}
+
+.app-light .bg-amber-400\/10 {
+  background: #fffbeb !important;
+}
+
+.app-light .border-amber-400\/20 {
+  border-color: #facc15 !important;
 }
