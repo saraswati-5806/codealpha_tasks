@@ -28,6 +28,13 @@ function getCertificateStatus() {
   return localStorage.getItem("phishguard_certificate") || "Locked";
 }
 
+function getReadinessLabel(percent) {
+  if (percent >= 90) return "Expert";
+  if (percent >= 70) return "Ready";
+  if (percent >= 40) return "Learning";
+  return "Beginner";
+}
+
 function updateProgressUI() {
   const completed = getCompletedLessons();
   const percent = Math.round((completed.length / totalItems) * 100);
@@ -38,6 +45,7 @@ function updateProgressUI() {
   const completedCount = document.getElementById("completedCount");
   const quizScoreBox = document.getElementById("quizScoreBox");
   const certificateStatus = document.getElementById("certificateStatus");
+  const readinessLabel = document.getElementById("readinessLabel");
 
   if (progressFill) progressFill.style.width = `${percent}%`;
   if (progressText) progressText.textContent = `${completed.length}/${totalItems}`;
@@ -45,6 +53,17 @@ function updateProgressUI() {
   if (completedCount) completedCount.textContent = completed.length;
   if (quizScoreBox) quizScoreBox.textContent = `${getQuizScore()}/10`;
   if (certificateStatus) certificateStatus.textContent = getCertificateStatus();
+  if (readinessLabel) readinessLabel.textContent = getReadinessLabel(percent);
+}
+
+function resetPhishGuardProgress() {
+  localStorage.removeItem("phishguard_completed");
+  localStorage.removeItem("phishguard_quiz_score");
+  localStorage.removeItem("phishguard_certificate");
+  localStorage.removeItem("phishguard_email_score");
+  localStorage.removeItem("phishguard_website_score");
+  updateProgressUI();
+  alert("Progress reset successfully.");
 }
 
 updateProgressUI();
