@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureCodeAudit Pro Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="script.js"></script>
+</head>
+<body>
+    <nav>
+        <h2>🛡️ SecureCodeAudit Pro</h2>
+    </nav>
+    <header>
+        <h1>Secure Coding Review Dashboard</h1>
+        <p>Professional audit dashboard.</p>
+    </header>
+    <section>
+        <h2>Audit Summary</h2>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Finding</th>
+                    <th>Severity</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>F-001</td>
+                    <td>SQL Injection</td>
+                    <td>High</td>
+                    <td>Fixed</td>
+                </tr>
+                <tr>
+                    <td>F-002</td>
+                    <td>Hardcoded Secret</td>
+                    <td>Medium</td>
+                    <td>Fixed</td>
+                </tr>
+                <tr>
+                    <td>F-003</td>
+                    <td>Weak MD5</td>
+                    <td>High</td>
+                    <td>Fixed</td>
+                </tr>
+                <tr>
+                    <td>F-004</td>
+                    <td>Debug Enabled</td>
+                    <td>High</td>
+                    <td>Fixed</td>
+                </tr>
+                <tr>
+                    <td>F-005</td>
+                    <td>Input Validation</td>
+                    <td>Medium</td>
+                    <td>Fixed</td>
+                </tr>
+                <tr>
+                    <td>F-006</td>
+                    <td>IDOR</td>
+                    <td>Medium</td>
+                    <td>Fixed</td>
+                </tr>
+                <tr>
+                    <td>F-007</td>
+                    <td>No Rate Limiting</td>
+                    <td>Medium</td>
+                    <td>Fixed</td>
+                </tr>
+                <tr>
+                    <td>F-008</td>
+                    <td>Verbose Errors</td>
+                    <td>Low</td>
+                    <td>Fixed</td>
+                </tr>
+                <tr>
+                    <td>F-009</td>
+                    <td>No Security Logging</td>
+                    <td>Medium</td>
+                    <td>Fixed</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+    <section>
+        <h2>OWASP Mapping</h2>
+        <ul>
+            <li>A01 Broken Access Control</li>
+            <li>A03 Injection</li>
+            <li>A05 Security Misconfiguration</li>
+            <li>A07 Authentication Failures</li>
+            <li>A09 Logging Failures</li>
+        </ul>
+    </section>
+    <section>
+        <h2>Recommendations</h2>
+        <ol>
+            <li>Parameterized queries</li>
+            <li>bcrypt</li>
+            <li>Environment variables</li>
+            <li>Disable debug</li>
+            <li>Validate input</li>
+            <li>Authorization checks</li>
+            <li>Rate limiting</li>
+            <li>Secure errors</li>
+            <li>Security logging</li>
+        </ol>
+    </section>
+    <footer>
+        <p>© 2026 SecureCodeAudit Pro</p>
+    </footer>
+</body>
+</html>
